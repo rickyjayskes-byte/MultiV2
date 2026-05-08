@@ -556,17 +556,19 @@ body {
 <!-- ── Topbar ──────────────────────────────────────────── -->
 <header class="topbar">
   <a class="logo-wrap" href="#" onclick="reset();return false;">
-    <!-- Multi Instruments logo — SVG recreation -->
-    <svg viewBox="0 0 172 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:42px;width:auto;flex-shrink:0;">
-      <!-- Red C-arc: opens to the right -->
-      <path d="M108,6 A40,24 0 1 0 108,54" stroke="#C0202A" stroke-width="5" fill="none" stroke-linecap="butt"/>
-      <!-- "Multi" bold red -->
-      <text x="14" y="30" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="#C0202A" letter-spacing="-0.5">Multi</text>
-      <!-- "Instruments" bold dark, slightly smaller -->
-      <text x="14" y="50" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="17" fill="#f8fafc" letter-spacing="-0.3">Instruments</text>
-      <!-- "Instrumentation" italic small, muted -->
-      <text x="15" y="60" font-family="Arial,sans-serif" font-style="italic" font-size="8.5" fill="rgba(255,255,255,0.3)" letter-spacing="0.5">Instrumentation</text>
-    </svg>
+    <!-- Multi Instruments logo — exact recreation -->
+    <span style="display:inline-flex;align-items:center;background:#fff;border-radius:6px;padding:3px 8px 3px 6px;">
+      <svg viewBox="0 0 160 68" xmlns="http://www.w3.org/2000/svg" style="height:40px;width:auto;flex-shrink:0;">
+        <!-- Nearly complete red oval, gap at lower-right (~60°) -->
+        <path d="M 132,50 A 62,28 0 1 1 132,18" stroke="#C0202A" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        <!-- "Multi" bold red -->
+        <text x="16" y="33" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="#C0202A" letter-spacing="-1">Multi</text>
+        <!-- "Instruments" bold black -->
+        <text x="20" y="52" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="18" fill="#111111" letter-spacing="-0.5">Instruments</text>
+        <!-- "Instrumentation" italic small -->
+        <text x="34" y="63" font-family="Arial,sans-serif" font-style="italic" font-size="9" fill="#888" letter-spacing="0.3">Instrumentation</text>
+      </svg>
+    </span>
   </a>
 
   <div class="topbar-right">
