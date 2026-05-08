@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multi Instruments — Product Configurator</title>
+<style>
+/* ── Reset & Base ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:     #C0202A;
+  --red-dk:  #9a1820;
+  --red-lt:  rgba(192,32,42,.08);
+  --blue:    #1a4db8;
+  --green:   #0e8a65;
+  --border:  #e8e8e8;
+  --bg:      #f2f3f5;
+  --text:    #111;
+  --muted:   #7a7a7a;
+  --card-shadow: 0 1px 4px rgba(0,0,0,.07), 0 0 0 .5px rgba(0,0,0,.06);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Topbar ─────────────────────────────────────────────── */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-mark { width: 40px; height: 40px; flex-shrink: 0; }
+
+.logo-text { display: flex; flex-direction: column; gap: 0; }
+.logo-text .l1 {
+  font-size: 15px; font-weight: 900; color: var(--red);
+  font-family: "Arial Black", sans-serif;
+  line-height: 1.1; letter-spacing: -.01em;
+}
+.logo-text .l2 {
+  font-size: 12px; font-weight: 900; color: #222;
+  font-family: "Arial Black", sans-serif;
+  line-height: 1.1; letter-spacing: -.01em;
+}
+.logo-text .l3 {
+  font-size: 9px; color: var(--muted);
+  font-style: italic; letter-spacing: .05em; margin-top: 1px;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.topbar-nav { display: flex; gap: 2px; }
+.topbar-nav a {
+  font-size: 13px; color: #555; text-decoration: none;
+  padding: 5px 10px; border-radius: 6px;
+  transition: background .15s, color .15s;
+}
+.topbar-nav a:hover { background: var(--red-lt); color: var(--red); }
+
+.topbar-divider { width: 1px; height: 20px; background: var(--border); }
+.topbar-badge {
+  font-size: 11px; background: var(--red); color: #fff;
+  padding: 3px 10px; border-radius: 20px;
+  font-weight: 700; letter-spacing: .04em;
+}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(160deg, #fff 60%, #fdf1f2 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 3.5rem 1.5rem 3rem;
+}
+
+.hero-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--red);
+  margin-bottom: .85rem;
+}
+.hero-eyebrow::before {
+  content: ""; width: 18px; height: 2px; background: var(--red); border-radius: 1px;
+}
+
+.hero h1 {
+  font-size: clamp(1.65rem, 3.5vw, 2.5rem);
+  font-weight: 900;
+  font-family: "Arial Black", sans-serif;
+  color: var(--text);
+  line-height: 1.13;
+  margin-bottom: .9rem;
+  letter-spacing: -.02em;
+}
+.hero h1 em { font-style: normal; color: var(--red); }
+
+.hero-sub {
+  font-size: 14px; color: #555; max-width: 480px;
+  line-height: 1.7; margin-bottom: 1.75rem;
+}
+
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--red); color: #fff;
+  padding: 10px 22px; border-radius: 8px;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  border: none; cursor: pointer; font-family: inherit;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  box-shadow: 0 2px 8px rgba(192,32,42,.25);
+}
+.btn-hero:hover { background: var(--red-dk); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,32,42,.3); }
+
+.btn-hero-ghost {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; color: #444;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  border: 1px solid var(--border); cursor: pointer; font-family: inherit;
+  transition: background .15s, border-color .15s;
+}
+.btn-hero-ghost:hover { background: #f5f5f5; border-color: #ccc; }
+
+/* Spec badges in hero */
+.hero-specs {
+  display: flex; gap: 0; margin-top: 2rem;
+  border-top: 1px solid var(--border); padding-top: 1.75rem;
+  flex-wrap: wrap; gap: 2rem;
+}
+.hero-spec { text-align: left; }
+.hero-spec .val {
+  font-size: 24px; font-weight: 900; color: var(--red);
+  font-family: "Arial Black", sans-serif; line-height: 1;
+}
+.hero-spec .lbl { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: .03em; }
+
+/* Hero visual (right side) */
+.hero-visual {
+  width: 240px; flex-shrink: 0;
+}
+.hero-visual-inner {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+.hero-visual-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: .75rem;
+}
+
+/* ── Configurator section ───────────────────────────────── */
+#configurator { scroll-margin-top: 56px; }
+.main { max-width: 880px; margin: 0 auto; padding: 1.75rem 1rem 4rem; }
+
+/* ── Progress ───────────────────────────────────────────── */
+.step-header { margin-bottom: 1.25rem; }
+.prog { display: flex; gap: 3px; margin-bottom: .6rem; }
+.ps {
+  flex: 1; height: 3px; border-radius: 2px; background: #ddd;
+  transition: background .3s, opacity .3s;
+}
+.ps.done   { background: var(--red); }
+.ps.active { background: var(--red); opacity: .4; }
+.prog-meta { display: flex; justify-content: space-between; align-items: center; }
+.prog-label { font-size: 11px; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+.code-pill {
+  font-family: monospace; font-size: 11px;
+  background: #111; color: var(--red);
+  padding: 3px 10px; border-radius: 20px;
+  letter-spacing: .05em; transition: opacity .3s;
+}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--card-shadow);
+}
+
+.stitle { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.sdesc  { font-size: 13px; color: #666; margin-bottom: 1.25rem; line-height: 1.6; }
+
+/* ── Landing grid ───────────────────────────────────────── */
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 10px; margin-bottom: .5rem;
+}
+
+.lcard {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.25rem 1rem; cursor: pointer; text-align: center;
+  position: relative; overflow: hidden; background: #fff;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+  box-shadow: var(--card-shadow);
+}
+.lcard:hover { border-color: var(--red); box-shadow: 0 4px 16px rgba(192,32,42,.1); transform: translateY(-1px); }
+.lcard .licon { font-size: 26px; margin-bottom: 8px; }
+.lcard .lname { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.lcard .lsub  { font-size: 11px; color: var(--muted); line-height: 1.45; }
+
+.live-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 9px; background: var(--red); color: #fff;
+  padding: 2px 7px; border-radius: 10px;
+  font-weight: 700; letter-spacing: .06em;
+}
+
+/* ── Valve type cards ───────────────────────────────────── */
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+
+.tcard {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.25rem 1rem 1rem; cursor: pointer; text-align: center;
+  background: #fff; position: relative; overflow: hidden;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+  box-shadow: var(--card-shadow);
+}
+.tcard::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: #e0e0e0; transition: background .15s;
+}
+.tcard:hover { border-color: var(--red); box-shadow: 0 4px 14px rgba(192,32,42,.1); transform: translateY(-1px); }
+.tcard:hover::before, .tcard.sel::before { background: var(--red); }
+.tcard.sel { border-color: var(--red); background: #fffafa; }
+
+.tc-num   { font-size: 42px; font-weight: 900; color: var(--red); line-height: 1.05; font-family: "Arial Black", monospace; }
+.tc-label { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 5px; }
+.tc-sub   { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+/* ── Model grid ─────────────────────────────────────────── */
+.og { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 1.1rem; }
+
+.oc {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: .9rem; cursor: pointer; background: #fff;
+  transition: border-color .15s, box-shadow .15s, transform .12s;
+  position: relative; box-shadow: var(--card-shadow);
+}
+.oc:hover { border-color: var(--red); box-shadow: 0 4px 14px rgba(192,32,42,.1); transform: translateY(-1px); }
+.oc.sel   { border-color: var(--red); background: #fffafa; }
+.oc.sel::after {
+  content: "✓"; position: absolute; top: 9px; right: 11px;
+  font-size: 12px; font-weight: 700; color: var(--red);
+}
+.oc .cc   { font-size: 13px; font-weight: 700; color: var(--red); font-family: monospace; letter-spacing: .05em; margin-bottom: 4px; }
+.oc .cdiv { width: 100%; height: 1px; background: #f0f0f0; margin-bottom: 7px; }
+.oc .cn   { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.oc .cs   { font-size: 11px; color: var(--muted); line-height: 1.45; margin-bottom: 8px; }
+.oc .valve-schema { border-radius: 8px; background: #f8f8f8; overflow: hidden; }
+
+/* ── Option cards (smaller) ─────────────────────────────── */
+.og2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 8px; margin-bottom: 1.1rem; }
+
+.oc2 {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: .8rem; cursor: pointer; background: #fff;
+  transition: border-color .15s, box-shadow .15s, transform .12s;
+  position: relative; box-shadow: var(--card-shadow);
+}
+.oc2:hover { border-color: var(--red); box-shadow: 0 3px 10px rgba(192,32,42,.09); transform: translateY(-1px); }
+.oc2.sel   { border-color: var(--red); background: #fffafa; }
+.oc2.sel::after {
+  content: "✓"; position: absolute; top: 8px; right: 10px;
+  font-size: 11px; font-weight: 700; color: var(--red);
+}
+.oc2 .cc { font-size: 10px; font-weight: 700; color: var(--red); font-family: monospace; letter-spacing: .07em; margin-bottom: 4px; text-transform: uppercase; }
+.oc2 .cn { font-size: 13px; font-weight: 600; color: var(--text); }
+.oc2 .cs { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+
+/* ── Checkbox rows ──────────────────────────────────────── */
+.chk-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: .75rem 1rem; border: 1px solid var(--border);
+  border-radius: 9px; cursor: pointer; background: #fff;
+  margin-bottom: 8px;
+  transition: border-color .15s, box-shadow .15s;
+  box-shadow: var(--card-shadow);
+}
+.chk-row:hover { border-color: var(--red); box-shadow: 0 2px 8px rgba(192,32,42,.08); }
+.chk-row.sel   { border-color: var(--red); background: #fffafa; }
+
+.chkbox {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1.5px solid #ccc; background: #fff;
+  flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, border-color .15s;
+}
+.chk-row.sel .chkbox { background: var(--red); border-color: var(--red); }
+.chk-row.sel .chkbox::after {
+  content: ""; display: block; width: 9px; height: 6px;
+  border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.chk-code {
+  font-family: monospace; font-size: 10px; color: var(--red); font-weight: 700;
+  background: var(--red-lt); padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+}
+
+.note {
+  font-size: 12px; color: #555; background: #f8f9fa;
+  padding: 10px 14px; border-radius: 8px; margin-bottom: 1rem;
+  line-height: 1.6; border-left: 3px solid var(--red);
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+.nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: .25rem; }
+
+.btn {
+  padding: 9px 20px; border-radius: 8px; border: 1px solid #d0d0d0;
+  background: #fff; cursor: pointer; font-size: 13px; color: #333;
+  font-family: inherit; font-weight: 600;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.btn:hover { background: #f5f5f5; border-color: #bbb; }
+.btn.pri   { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 2px 8px rgba(192,32,42,.2); }
+.btn.pri:hover { background: var(--red-dk); border-color: var(--red-dk); box-shadow: 0 3px 12px rgba(192,32,42,.3); }
+.btn.danger  { background: #fff; color: var(--red); border-color: #e0b8b8; }
+.btn.danger:hover { background: #fff5f5; }
+.btn:disabled { opacity: .35; cursor: default; pointer-events: none; }
+
+/* ── Result card ────────────────────────────────────────── */
+.result-card {
+  background: #fff; border-radius: 14px; border: 1px solid var(--border);
+  padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+.result-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--red);
+}
+
+.rcode {
+  font-family: monospace; font-size: 20px; font-weight: 700; color: var(--text);
+  margin-bottom: .75rem; word-break: break-all; letter-spacing: .05em;
+}
+
+.segs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.1rem; }
+.seg {
+  font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  background: var(--red-lt); color: var(--red);
+  font-family: monospace; font-weight: 700;
+  border: 1px solid rgba(192,32,42,.15);
+}
+.seg.o {
+  background: rgba(14,138,101,.08); color: var(--green);
+  border-color: rgba(14,138,101,.18);
+}
+
+.st { width: 100%; font-size: 13px; border-collapse: collapse; }
+.st td { padding: 7px 0; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+.st td:first-child { color: var(--muted); width: 44%; font-size: 12px; }
+.st tr:last-child td { border-bottom: none; }
+
+.sec-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: .75rem; padding-bottom: .5rem; border-bottom: 1px solid #f0f0f0;
+}
+
+/* ── Quote list ─────────────────────────────────────────── */
+.quote-list { margin-bottom: 1.25rem; }
+.quote-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: .75rem 1rem; border: 1px solid var(--border);
+  border-radius: 9px; background: #fafafa; margin-bottom: 8px;
+  box-shadow: var(--card-shadow);
+}
+.quote-item-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--red); color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.quote-item-code { font-family: monospace; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.quote-item-del { background: none; border: none; cursor: pointer; color: #ccc; font-size: 16px; padding: 0 4px; transition: color .15s; }
+.quote-item-del:hover { color: var(--red); }
+
+/* ── Form ───────────────────────────────────────────────── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { margin-bottom: .75rem; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 5px; letter-spacing: .01em; }
+.form-group input,
+.form-group textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid #ddd;
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  color: #333; background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none; border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(192,32,42,.1);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* ── Qty ────────────────────────────────────────────────── */
+.qty-row { display: flex; align-items: center; gap: 8px; margin-bottom: 1.25rem; }
+.qty-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid #ddd;
+  background: #fff; cursor: pointer; font-size: 18px; color: #555;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .15s, color .15s, background .15s; flex-shrink: 0;
+}
+.qty-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-lt); }
+.qty-input {
+  width: 64px; padding: 6px 10px; border: 1px solid #ddd;
+  border-radius: 8px; font-size: 16px; font-weight: 700;
+  text-align: center; font-family: inherit; color: var(--text);
+}
+.qty-input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,32,42,.1); }
+
+/* ── Success ────────────────────────────────────────────── */
+.success-wrap { text-align: center; padding: 2.5rem 1rem; }
+.success-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(14,138,101,.1); border: 2px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+.success-icon::after {
+  content: ""; display: block; width: 24px; height: 15px;
+  border-left: 3px solid var(--green); border-bottom: 3px solid var(--green);
+  transform: rotate(-45deg) translateY(-3px);
+}
+.success-wrap h3 { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: .5rem; }
+.success-wrap p  { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 1.5rem; }
+
+.err-msg {
+  font-size: 12px; color: var(--red); margin-top: 8px;
+  padding: 8px 12px; background: rgba(192,32,42,.05);
+  border-radius: 8px; border: 1px solid rgba(192,32,42,.18);
+}
+
+/* ── Legend ─────────────────────────────────────────────── */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #555; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.footer {
+  background: #fff; border-top: 1px solid var(--border);
+  padding: 1.5rem; text-align: center;
+  font-size: 12px; color: var(--muted); line-height: 1.7;
+}
+.footer a { color: var(--red); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .form-row { grid-template-columns: 1fr; }
+  .topbar-nav { display: none; }
+  .topbar-divider { display: none; }
+}
+@media (max-width: 480px) {
+  .type-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .hero { padding: 2rem 1rem 1.75rem; }
+  .hero h1 { font-size: 1.55rem; }
+  .hero-specs { gap: 1.25rem; }
+  .nav { flex-direction: column; align-items: stretch; }
+  .nav .btn { text-align: center; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── Topbar ──────────────────────────────────────────── -->
+<header class="topbar">
+  <a class="logo-wrap" href="#" onclick="reset();return false;">
+    <!-- Multi Instruments logo mark -->
+    <svg class="logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer arc (gauge face) -->
+      <path d="M8 36 A20 20 0 1 1 40 36" stroke="#C0202A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Inner arc -->
+      <path d="M13 36 A15 15 0 1 1 35 36" stroke="#C0202A" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+      <!-- Gauge pointer -->
+      <line x1="24" y1="24" x2="34" y2="14" stroke="#C0202A" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="3" fill="#C0202A"/>
+      <!-- Tick marks -->
+      <line x1="8"  y1="36" x2="10" y2="32" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="40" y1="36" x2="38" y2="32" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="14" y1="15" x2="16" y2="18" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="34" y1="15" x2="32" y2="18" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="24" y1="8"  x2="24" y2="12" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+    <div class="logo-text">
+      <span class="l1">Multi</span>
+      <span class="l2">Instruments</span>
+      <span class="l3">Instrumentation</span>
+    </div>
+  </a>
+
+  <div class="topbar-right">
+    <nav class="topbar-nav">
+      <a href="#configurator">Configurator</a>
+      <a href="mailto:ricky.jongenelen@multi-instruments.com">Contact</a>
+    </nav>
+    <div class="topbar-divider"></div>
+    <span class="topbar-badge">LIVE</span>
+  </div>
+</header>
+
+<!-- ── Hero ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Multi Instruments — Online Configurator</div>
+      <h1>Configure your<br><em>manifold valve</em><br>in minutes</h1>
+      <p class="hero-sub">
+        Select valve count, model, material and connection — get your exact product code and request a quote directly. No spreadsheets, no back-and-forth.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-hero" href="#configurator">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="7" stroke="white" stroke-width="1.5"/>
+            <polyline points="5.5,8 8,10.5 10.5,8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="8" y1="5" x2="8" y2="10.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Start configurator
+        </a>
+        <a class="btn-hero-ghost" href="mailto:ricky.jongenelen@multi-instruments.com">
+          Contact us
+        </a>
+      </div>
+
+      <div class="hero-specs">
+        <div class="hero-spec">
+          <div class="val">3–5</div>
+          <div class="lbl">Valve configurations</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">9</div>
+          <div class="lbl">Material grades</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">680 Bar</div>
+          <div class="lbl">Max working pressure</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">NACE</div>
+          <div class="lbl">MR01-75 compliant</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero visual: mini manifold schematic -->
+    <div class="hero-visual">
+      <div class="hero-visual-inner">
+        <div class="hero-visual-label">5-valve manifold — MD55F</div>
+        <svg width="212" height="130" viewBox="0 0 212 130" xmlns="http://www.w3.org/2000/svg">
+          <!-- Process connections -->
+          <rect x="39" y="12" width="8" height="8" rx="1" fill="#888" transform="rotate(45,43,16)"/>
+          <text x="50" y="19" font-size="7.5" font-weight="700" fill="#555" font-family="Arial,sans-serif">HP</text>
+          <rect x="157" y="12" width="8" height="8" rx="1" fill="#888" transform="rotate(45,161,16)"/>
+          <text x="150" y="19" font-size="7.5" font-weight="700" fill="#555" font-family="Arial,sans-serif" text-anchor="end">LP</text>
+
+          <!-- Stems: process → ISO valves -->
+          <line x1="43" y1="22" x2="43" y2="42" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="161" y1="22" x2="161" y2="42" stroke="#bbb" stroke-width="1.5"/>
+
+          <!-- ISO valves (blue bowtie, vertical) -->
+          <line x1="36" y1="42" x2="50" y2="42" stroke="#1a4db8" stroke-width="1.5"/>
+          <polygon points="36,42 50,42 43,49" fill="#1a4db8" opacity="0.88"/>
+          <polygon points="36,56 50,56 43,49" fill="#1a4db8" opacity="0.88"/>
+          <line x1="36" y1="56" x2="50" y2="56" stroke="#1a4db8" stroke-width="1.5"/>
+
+          <line x1="154" y1="42" x2="168" y2="42" stroke="#1a4db8" stroke-width="1.5"/>
+          <polygon points="154,42 168,42 161,49" fill="#1a4db8" opacity="0.88"/>
+          <polygon points="154,56 168,56 161,49" fill="#1a4db8" opacity="0.88"/>
+          <line x1="154" y1="56" x2="168" y2="56" stroke="#1a4db8" stroke-width="1.5"/>
+
+          <!-- Stems: ISO → body -->
+          <line x1="43" y1="56" x2="43" y2="74" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="161" y1="56" x2="161" y2="74" stroke="#bbb" stroke-width="1.5"/>
+
+          <!-- Manifold body -->
+          <line x1="43" y1="74" x2="161" y2="74" stroke="#aaa" stroke-width="1.5"/>
+
+          <!-- EQ1 (green, horizontal) -->
+          <line x1="79" y1="67" x2="79" y2="81" stroke="#0e8a65" stroke-width="1.5"/>
+          <polygon points="73,67 73,81 79,74" fill="#0e8a65" opacity="0.88"/>
+          <polygon points="85,67 85,81 79,74" fill="#0e8a65" opacity="0.88"/>
+          <line x1="85" y1="67" x2="85" y2="81" stroke="#0e8a65" stroke-width="1.5"/>
+
+          <!-- VENT (red, vertical + arrow) -->
+          <line x1="95" y1="74" x2="109" y2="74" stroke="#C0202A" stroke-width="1.5"/>
+          <polygon points="95,68 109,68 102,74" fill="#C0202A" opacity="0.88"/>
+          <polygon points="95,80 109,80 102,74" fill="#C0202A" opacity="0.88"/>
+          <line x1="95" y1="80" x2="109" y2="80" stroke="#C0202A" stroke-width="1.5"/>
+          <!-- vent arrow up -->
+          <line x1="102" y1="58" x2="102" y2="67" stroke="#C0202A" stroke-width="1.5"/>
+          <polyline points="99,62 102,58 105,62" stroke="#C0202A" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- EQ2 (green, horizontal) -->
+          <line x1="119" y1="67" x2="119" y2="81" stroke="#0e8a65" stroke-width="1.5"/>
+          <polygon points="113,67 113,81 119,74" fill="#0e8a65" opacity="0.88"/>
+          <polygon points="125,67 125,81 119,74" fill="#0e8a65" opacity="0.88"/>
+          <line x1="125" y1="67" x2="125" y2="81" stroke="#0e8a65" stroke-width="1.5"/>
+
+          <!-- Stem: body → instrument -->
+          <line x1="79" y1="75" x2="79" y2="100" stroke="#bbb" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+          <!-- Instrument -->
+          <line x1="30" y1="104" x2="128" y2="104" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="79" y="114" font-size="7" fill="#aaa" font-family="Arial,sans-serif" text-anchor="middle">DP transmitter</text>
+
+          <!-- Legend -->
+          <circle cx="14" cy="120" r="4" fill="#1a4db8" opacity="0.88"/>
+          <text x="20" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Isolate</text>
+          <circle cx="58" cy="120" r="4" fill="#0e8a65" opacity="0.88"/>
+          <text x="64" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Equalize</text>
+          <circle cx="106" cy="120" r="4" fill="#C0202A" opacity="0.88"/>
+          <text x="112" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Vent</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Configurator ─────────────────────────────────────── -->
+<section id="configurator">
+  <div class="main">
+    <div class="step-header">
+      <div class="prog" id="prog"></div>
+      <div class="prog-meta">
+        <div class="prog-label" id="prog-label"></div>
+        <div class="code-pill" id="code-pill" style="opacity:0">—</div>
+      </div>
+    </div>
+    <div id="ct"></div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────── -->
+<footer class="footer">
+  <p>
+    <strong>Multi Instruments B.V.</strong> &nbsp;&bull;&nbsp;
+    <a href="mailto:ricky.jongenelen@multi-instruments.com">ricky.jongenelen@multi-instruments.com</a>
+  </p>
+  <p style="margin-top:4px;">Product codes generated by this configurator are indicative. Final specification confirmed in formal quote.</p>
+</footer>
+
+<script>
+'use strict';
+
+// ── State ────────────────────────────────────────────────
+var productType = null;
+var step = 0, valveType = null, model = null, mat = null, conn = null;
+var iface = null, oper = null, outputConn = null;
+var extras = new Set();
+var qty = 1, remarks = '';
+var contact = { name: '', company: '', phone: '', email: '' };
+var submitted = false, sending = false, sendError = '';
+var quoteList = [];
+
+// ── Product data ─────────────────────────────────────────
+var MODELS3 = [
+  { code: 'MD31D', name: 'Direct mount',      sub: 'Threaded process connections & impulse piping',           schema: 'iso-eq-iso',      iface: ['ISO','IM'], extraConn: [],              extras: ['TST'],                outputConn: [] },
+  { code: 'MD31F', name: 'Flat model',        sub: 'Flat body, DIN19213 pt.2 or Rosemount IM; for cabinets', schema: 'iso-eq-iso',      iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','TC','FC'],      outputConn: [] },
+  { code: 'MD31H', name: 'H-model',           sub: 'H-body, DIN19213 pt.2 interface',                        schema: 'iso-eq-iso',      iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'], outputConn: [] },
+  { code: 'MD31R', name: 'Remote mount',      sub: 'Remote mount, threaded instrument connection',            schema: 'iso-eq-iso',      iface: null,         extraConn: [],              extras: [],                     outputConn: [] },
+  { code: 'MD31T', name: 'T-model',           sub: 'Rosemount 2051CD/3051CD integral mounted',                schema: 'iso-eq-iso',      iface: ['IM'],       extraConn: ['ISOC','BW03'], extras: ['TST','BP','TC','FC'], outputConn: [] },
+  { code: 'MD32F', name: 'Flat model (MD32)', sub: 'Flat body, DIN19213 pt.2 or Rosemount IM',               schema: 'iso-eq-iso',      iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','TC','FC'],      outputConn: [] },
+  { code: 'MD32H', name: 'H-model (MD32)',    sub: 'H-body design, DIN19213 pt.2 interface',                  schema: 'iso-eq-iso',      iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'], outputConn: [] },
+  { code: 'MD33F', name: 'Flat model (MD33)', sub: 'Flat body, DIN19213 pt.2 or Rosemount IM',               schema: 'iso-eq-iso',      iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','TC','FC'],      outputConn: [] },
+];
+var MODELS4 = [
+  { code: 'MD41D', name: 'Direct mount',        sub: 'Direct mount — Vent + 2x Isolate + Equalize',                  schema: 'v-iso-eq-iso', iface: ['ISO','IM'], extraConn: [],              extras: [],                     outputConn: ['03N'] },
+  { code: 'MD41F', name: 'Flat model',          sub: 'Flat body — Vent + 2x Isolate + Equalize',                     schema: 'v-iso-eq-iso', iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','TC','FC'],      outputConn: [] },
+  { code: 'MD41H', name: 'H-model',             sub: 'H-body — Vent + 2x Isolate + Equalize, DIN19213 pt.2',         schema: 'v-iso-eq-iso', iface: ['ISO'],      extraConn: [],              extras: ['XS','TST','BP'],      outputConn: [] },
+  { code: 'MD42T', name: 'T-model',             sub: 'T-model — 2x Isolate + 2x Vent, Rosemount 2051CD/3051CD',      schema: 'iso-2v-iso',   iface: ['IM'],       extraConn: ['ISOC','BW03'], extras: ['TST','BP','TC','FC'], outputConn: [] },
+  { code: 'MD42H', name: 'H-model (level)',     sub: 'H-body level — 2x Isolate + 2x Vent, DIN19213 pt.2',          schema: 'iso-2v-iso',   iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'], outputConn: [] },
+  { code: 'MD44H', name: 'H-model (lv. 44)',    sub: 'H-body level — 2x Isolate + 2x Vent, DIN19213 pt.2',          schema: 'iso-2v-iso',   iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'], outputConn: [] },
+];
+var MODELS5 = [
+  { code: 'MD51D', name: 'Direct mount',        sub: 'Direct mount — 2x Isolate + Equalize + 2x Vent',              schema: 'iso-v-eq-v-iso',  iface: ['ISO','IM'], extraConn: [],              extras: [],                        outputConn: ['03N'] },
+  { code: 'MD51H', name: 'H-model',             sub: 'H-body — 2x Isolate + Equalize + 2x Vent, DIN19213 pt.2',    schema: 'iso-v-eq-v-iso',  iface: ['ISO'],      extraConn: ['ISOC'],         extras: ['TST','BP','TC','FC'],     outputConn: [] },
+  { code: 'MD52F', name: 'Flat model',          sub: 'Flat body — 2x Isolate + Equalize + 2x Vent, 80mm pitch',    schema: 'iso-v-eq-v-iso',  iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','xTST','TC','FC'],   outputConn: ['03N','03BP'] },
+  { code: 'MD52H', name: 'H-model (MD52)',      sub: 'H-body — 2x Isolate + Equalize + 2x Vent, 80mm pitch',       schema: 'iso-v-eq-v-iso',  iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'],     outputConn: [] },
+  { code: 'MD52T', name: 'T-model',             sub: 'T-model — 2x Isolate + Equalize + 2x Vent, Rosemount',       schema: 'iso-v-eq-v-iso',  iface: ['IM'],       extraConn: ['ISOC','BW03'], extras: ['TST','BP','TC','FC'],     outputConn: [] },
+  { code: 'MD53F', name: 'Flat model (MD53)',   sub: 'Flat body — 2x Isolate + Equalize + 2x Vent, 80mm pitch',    schema: 'iso-v-eq-v-iso',  iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['TST','TC','FC'],          outputConn: [] },
+  { code: 'MD55D', name: 'Direct mount (55)',   sub: 'Direct mount — 2x Isolate + 2x Equalize + Vent',             schema: 'iso-eq-v-eq-iso', iface: ['ISO','IM'], extraConn: [],              extras: [],                        outputConn: ['03N'] },
+  { code: 'MD55F', name: 'Flat model (55)',     sub: 'Flat body — 2x Isolate + 2x Equalize + Vent, 54mm pitch',   schema: 'iso-eq-v-eq-iso', iface: ['ISO','IM'], extraConn: ['BW03'],         extras: ['xTST','TC','FC'],         outputConn: ['01N','03N'] },
+  { code: 'MD55H', name: 'H-model (55)',        sub: 'H-body — 2x Isolate + 2x Equalize + Vent, 54mm pitch',      schema: 'iso-eq-v-eq-iso', iface: ['ISO'],      extraConn: [],              extras: ['TST','BP','TC','FC'],     outputConn: [] },
+  { code: 'MD55R', name: 'Remote mount',        sub: 'Remote mount — 2x Isolate + 2x Equalize + Vent',            schema: 'iso-eq-v-eq-iso', iface: null,         extraConn: [],              extras: ['DT'],                     outputConn: ['01N','02N','03N','01BP','02BP','03BP'] },
+  { code: 'MD55T', name: 'T-model (55)',        sub: 'T-model — 2x Isolate + 2x Equalize + Vent, Rosemount',      schema: 'iso-eq-v-eq-iso', iface: ['IM'],       extraConn: ['ISOC','BW03'], extras: ['TST','BP','TC','FC'],     outputConn: [] },
+  { code: 'MD56F', name: 'Flat model (56)',     sub: 'Flat body — 2x Isolate + 2x Equalize + Vent, IM or DIN19213', schema: 'iso-eq-v-eq-iso', iface: ['ISO','IM'], extraConn: ['BW03'],       extras: ['TST','TC','FC'],          outputConn: [] },
+];
+var MATERIALS = [
+  { code: 'SG',     name: 'AISI 316/L NACE',       sub: 'Standard stainless steel' },
+  { code: 'M',      name: 'Alloy 400 (Monel)',      sub: 'Salt water, hydrofluoric acid' },
+  { code: 'H',      name: 'Alloy C276 (Hastelloy)', sub: 'Aggressive chemical service' },
+  { code: 'INC825', name: 'Alloy 825',              sub: 'Sour oil & gas service' },
+  { code: 'INC625', name: 'Alloy 625',              sub: 'High strength, seawater' },
+  { code: 'D',      name: 'Duplex',                 sub: 'High strength + corrosion resistance' },
+  { code: 'SD',     name: 'Super Duplex',           sub: 'Enhanced corrosion resistance' },
+  { code: '6M0',    name: '254SMO / 6Mo',           sub: 'Chloride resistance' },
+  { code: 'Ti',     name: 'Titanium Gr 2',          sub: 'Extreme corrosion resistance' },
+];
+var BASE_CONN = [
+  { code: 'N01',  name: '1/4" NPT female',  sub: 'NPT 1/4"' },
+  { code: 'N02',  name: '3/8" NPT female',  sub: 'NPT 3/8"' },
+  { code: 'N03',  name: '1/2" NPT female',  sub: 'NPT 1/2" — most common' },
+  { code: 'BP01', name: '1/4" BSP.P female', sub: 'G1/4" parallel' },
+  { code: 'BP02', name: '3/8" BSP.P female', sub: 'G3/8" parallel' },
+  { code: 'BP03', name: '1/2" BSP.P female', sub: 'G1/2" parallel' },
+];
+var EXTRA_CONN = {
+  BW03: { code: 'BW03', name: '1/2" Buttweld pipe',          sub: 'sch160, L=100/200mm' },
+  ISOC: { code: 'ISOC', name: 'Contra DIN/IEC-Kidney flange', sub: 'Rosemount 3051 specific' },
+};
+var OUTPUT_CONN = {
+  '03N':  { code: '03N',  name: '1/2" NPT female output',   sub: 'Output connector' },
+  '01N':  { code: '01N',  name: '1/4" NPT female output',   sub: 'Output connector' },
+  '02N':  { code: '02N',  name: '3/8" NPT female output',   sub: 'Output connector' },
+  '03BP': { code: '03BP', name: '1/2" BSP.P female output', sub: 'Output connector' },
+  '01BP': { code: '01BP', name: '1/4" BSP.P female output', sub: 'Output connector' },
+  '02BP': { code: '02BP', name: '3/8" BSP.P female output', sub: 'Output connector' },
+};
+var IFACE = [
+  { code: 'ISO', name: 'DIN 19213 part 2',    sub: 'Standard ISO mounting' },
+  { code: 'IM',  name: 'Integral Mounted',    sub: 'Direct mount on transmitter' },
+];
+var OPER = [
+  { code: 'YP', name: 'Mixed + PTFE',           sub: 'Isolate: T-bar | Eq/Vent: Anti-tamper | PTFE' },
+  { code: 'YG', name: 'Mixed + Graphite',       sub: 'Isolate: T-bar | Eq/Vent: Anti-tamper | Graphite' },
+  { code: 'TP', name: 'All T-bar + PTFE',       sub: 'All valves T-bar | PTFE seal' },
+  { code: 'TG', name: 'All T-bar + Graphite',   sub: 'All valves T-bar | Graphite seal' },
+  { code: 'AP', name: 'All Anti-tamper + PTFE', sub: 'All valves anti-tamper | PTFE seal' },
+  { code: 'AG', name: 'All Anti-tamper + Graphite', sub: 'All valves anti-tamper | Graphite seal' },
+];
+var EXTRA_OPTS = {
+  TST:  { code: 'TST',   name: 'Extra test port',             sub: 'Default 1/4" female' },
+  xTST: { code: '2xTST', name: '2x extra test ports',        sub: 'Two 1/4" test ports' },
+  BP:   { code: 'BP',    name: 'Plugged test port',           sub: 'Test port plugged' },
+  TC:   { code: 'TC',    name: 'Test connector',              sub: 'Includes test port' },
+  FC:   { code: 'FC',    name: 'Non-return filling connector', sub: 'Includes test port' },
+  XS:   { code: 'XS',    name: 'Compact model',               sub: '100mm compact version' },
+  DT:   { code: 'DT',    name: 'Delrin tip valve heads',      sub: 'Valve heads with Delrin tip' },
+};
+
+// ── P&ID Valve Schema SVGs ────────────────────────────────
+var C_ISO  = '#1a4db8';
+var C_EQ   = '#0e8a65';
+var C_VENT = '#C0202A';
+
+// Gate/globe valve symbol: two filled triangles meeting at center
+// type: 'iso' | 'eq' | 'vent'
+// orient: 'v' (vertical, default) | 'h' (horizontal)
+function valveSym(x, y, type, orient) {
+  var c = type === 'iso' ? C_ISO : type === 'eq' ? C_EQ : C_VENT;
+  var pts1, pts2, cap1x1, cap1y1, cap1x2, cap1y2, cap2x1, cap2y1, cap2x2, cap2y2;
+  if (orient === 'h') {
+    // Horizontal: triangles point left/right
+    pts1 = (x-6)+','+(y-7)+' '+(x-6)+','+(y+7)+' '+x+','+y;
+    pts2 = (x+6)+','+(y-7)+' '+(x+6)+','+(y+7)+' '+x+','+y;
+    cap1x1=x-6; cap1y1=y-7; cap1x2=x-6; cap1y2=y+7;
+    cap2x1=x+6; cap2y1=y-7; cap2x2=x+6; cap2y2=y+7;
+  } else {
+    // Vertical: triangles point up/down
+    pts1 = (x-7)+','+(y-6)+' '+(x+7)+','+(y-6)+' '+x+','+y;
+    pts2 = (x-7)+','+(y+6)+' '+(x+7)+','+(y+6)+' '+x+','+y;
+    cap1x1=x-7; cap1y1=y-6; cap1x2=x+7; cap1y2=y-6;
+    cap2x1=x-7; cap2y1=y+6; cap2x2=x+7; cap2y2=y+6;
+  }
+  return [
+    '<line x1="'+cap1x1+'" y1="'+cap1y1+'" x2="'+cap1x2+'" y2="'+cap1y2+'" stroke="'+c+'" stroke-width="1.5"/>',
+    '<polygon points="'+pts1+'" fill="'+c+'" opacity="0.88"/>',
+    '<polygon points="'+pts2+'" fill="'+c+'" opacity="0.88"/>',
+    '<line x1="'+cap2x1+'" y1="'+cap2y1+'" x2="'+cap2x2+'" y2="'+cap2y2+'" stroke="'+c+'" stroke-width="1.5"/>',
+  ].join('');
+}
+
+// Vent-to-atmosphere symbol (small arrow pointing out)
+function ventAtm(x, y, dir) {
+  // dir: 'up' | 'right'
+  if (dir === 'right') {
+    return '<polyline points="'+(x+10)+','+(y)+' '+(x+17)+','+y+'" stroke="'+C_VENT+'" stroke-width="1.5" fill="none"/>'+
+           '<polyline points="'+(x+14)+','+(y-3)+' '+(x+17)+','+y+' '+(x+14)+','+(y+3)+'" stroke="'+C_VENT+'" stroke-width="1.5" fill="none"/>';
+  }
+  return '<polyline points="'+x+','+(y-10)+' '+x+','+(y-17)+'" stroke="'+C_VENT+'" stroke-width="1.5" fill="none"/>'+
+         '<polyline points="'+(x-3)+','+(y-14)+' '+x+','+(y-17)+' '+(x+3)+','+(y-14)+'" stroke="'+C_VENT+'" stroke-width="1.5" fill="none"/>';
+}
+
+// Small process connection symbol (filled square rotated 45°)
+function procConn(x, y, label, labelSide) {
+  var s = '<rect x="'+(x-4)+'" y="'+(y-4)+'" width="8" height="8" rx="1" fill="#888" transform="rotate(45,'+x+','+y+')"/>';
+  var tx = labelSide === 'right' ? x+7 : x-7;
+  var anchor = labelSide === 'right' ? 'start' : 'end';
+  s += '<text x="'+tx+'" y="'+(y+3)+'" font-size="7.5" font-weight="700" fill="#555" font-family="Arial,sans-serif" text-anchor="'+anchor+'">'+label+'</text>';
+  return s;
+}
+
+// Instrument connection symbol (dashed horizontal line)
+function instrConn(cx, y, w) {
+  var x1 = cx - w/2, x2 = cx + w/2;
+  return [
+    '<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="#777" stroke-width="1.5" stroke-dasharray="4,3"/>',
+    '<text x="'+cx+'" y="'+(y+9)+'" font-size="7" fill="#999" font-family="Arial,sans-serif" text-anchor="middle">DP transmitter</text>',
+  ].join('');
+}
+
+// Pipe line segment
+function pipe(x1, y1, x2, y2, color, dashed) {
+  return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(color||'#bbb')+'" stroke-width="1.5"'+(dashed?' stroke-dasharray="3,2"':'')+'/>';
+}
+
+// Text label
+function txt(x, y, s, size, color, anchor) {
+  return '<text x="'+x+'" y="'+y+'" font-size="'+(size||8)+'" fill="'+(color||'#888')+'" font-family="Arial,sans-serif" text-anchor="'+(anchor||'middle')+'">'+s+'</text>';
+}
+
+function wrapSvg(W, H, content) {
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+content+'</svg>';
+}
+
+// ── Schema: iso-eq-iso (3-valve) ──────────────────────────
+// Layout: HP and LP process → ISO valves → manifold body → EQ valve → instrument
+function drawIsoEqIso() {
+  var W = 200, H = 116;
+  var hpx = 58, lpx = 142;
+  var procY = 14;
+  var isoY = 44;     // ISO valve center y
+  var bodyY = 70;    // manifold body y
+  var instrY = 100;  // instrument connection y
+  var eqX = 100;     // EQ valve x
+
+  var s = '';
+
+  // Process connection labels & symbols
+  s += procConn(hpx, procY, 'HP', 'right');
+  s += procConn(lpx, procY, 'LP', 'left');
+
+  // Vertical stems process → ISO valves
+  s += pipe(hpx, procY+6, hpx, isoY-7);
+  s += pipe(lpx, procY+6, lpx, isoY-7);
+
+  // ISO valves (vertical orientation, flow top→bottom)
+  s += valveSym(hpx, isoY, 'iso', 'v');
+  s += valveSym(lpx, isoY, 'iso', 'v');
+
+  // Stems ISO → manifold body
+  s += pipe(hpx, isoY+7, hpx, bodyY);
+  s += pipe(lpx, isoY+7, lpx, bodyY);
+
+  // Manifold body (horizontal)
+  s += pipe(hpx, bodyY, lpx, bodyY, '#aaa');
+
+  // EQ valve (horizontal, on body, flow left→right)
+  s += valveSym(eqX, bodyY, 'eq', 'h');
+
+  // Stem body → instrument
+  s += pipe(eqX, bodyY+1, eqX, instrY-2, '#bbb', true);
+
+  // Instrument
+  s += instrConn(eqX, instrY, 80);
+
+  return wrapSvg(W, H, s);
+}
+
+// ── Schema: v-iso-eq-iso (4-valve MD41) ──────────────────
+// VENT on HP side, 2x ISO, 1 EQ
+function drawVIsoEqIso() {
+  var W = 200, H = 116;
+  var hpx = 58, lpx = 142;
+  var ventX = 28;
+  var procY = 14;
+  var isoY = 44;
+  var bodyY = 70;
+  var instrY = 100;
+  var eqX = 100;
+
+  var s = '';
+
+  s += procConn(hpx, procY, 'HP', 'right');
+  s += procConn(lpx, procY, 'LP', 'left');
+
+  // Stems process → ISO valves
+  s += pipe(hpx, procY+6, hpx, isoY-7);
+  s += pipe(lpx, procY+6, lpx, isoY-7);
+
+  // ISO valves
+  s += valveSym(hpx, isoY, 'iso', 'v');
+  s += valveSym(lpx, isoY, 'iso', 'v');
+
+  // Stems ISO → body
+  s += pipe(hpx, isoY+7, hpx, bodyY);
+  s += pipe(lpx, isoY+7, lpx, bodyY);
+
+  // Manifold body
+  s += pipe(ventX, bodyY, lpx, bodyY, '#aaa');
+
+  // EQ valve (horizontal)
+  s += valveSym(eqX, bodyY, 'eq', 'h');
+
+  // VENT valve (on left end of body, venting up)
+  s += valveSym(ventX, bodyY, 'vent', 'v');
+  s += ventAtm(ventX, bodyY, 'up');
+  s += txt(ventX, bodyY+15, 'VENT', 7, C_VENT);
+
+  // Stem body → instrument
+  s += pipe(eqX, bodyY+1, eqX, instrY-2, '#bbb', true);
+  s += instrConn(eqX, instrY, 80);
+
+  return wrapSvg(W, H, s);
+}
+
+// ── Schema: iso-2v-iso (4-valve MD42/44) ─────────────────
+// 2x ISO process valves, 2x VENT on body (level measurement)
+function drawIso2VIso() {
+  var W = 200, H = 116;
+  var hpx = 52, lpx = 148;
+  var procY = 14;
+  var isoY = 44;
+  var bodyY = 70;
+  var instrY = 100;
+  var vent1X = 82, vent2X = 118;
+  var s = '';
+
+  s += procConn(hpx, procY, 'HP', 'right');
+  s += procConn(lpx, procY, 'LP', 'left');
+
+  s += pipe(hpx, procY+6, hpx, isoY-7);
+  s += pipe(lpx, procY+6, lpx, isoY-7);
+
+  s += valveSym(hpx, isoY, 'iso', 'v');
+  s += valveSym(lpx, isoY, 'iso', 'v');
+
+  s += pipe(hpx, isoY+7, hpx, bodyY);
+  s += pipe(lpx, isoY+7, lpx, bodyY);
+
+  // Manifold body
+  s += pipe(hpx, bodyY, lpx, bodyY, '#aaa');
+
+  // 2x VENT on body
+  s += valveSym(vent1X, bodyY, 'vent', 'v');
+  s += ventAtm(vent1X, bodyY, 'up');
+  s += valveSym(vent2X, bodyY, 'vent', 'v');
+  s += ventAtm(vent2X, bodyY, 'up');
+
+  // Instrument between the two vents
+  s += pipe(100, bodyY+1, 100, instrY-2, '#bbb', true);
+  s += instrConn(100, instrY, 80);
+
+  return wrapSvg(W, H, s);
+}
+
+// ── Schema: iso-v-eq-v-iso (5-valve MD51/52) ─────────────
+// 2x ISO, 1 EQ, 2x VENT on body
+function drawIsoVEqVIso() {
+  var W = 200, H = 116;
+  var hpx = 44, lpx = 156;
+  var procY = 14;
+  var isoY = 44;
+  var bodyY = 70;
+  var instrY = 100;
+  var vent1X = 74, eqX = 100, vent2X = 126;
+  var s = '';
+
+  s += procConn(hpx, procY, 'HP', 'right');
+  s += procConn(lpx, procY, 'LP', 'left');
+
+  s += pipe(hpx, procY+6, hpx, isoY-7);
+  s += pipe(lpx, procY+6, lpx, isoY-7);
+
+  s += valveSym(hpx, isoY, 'iso', 'v');
+  s += valveSym(lpx, isoY, 'iso', 'v');
+
+  s += pipe(hpx, isoY+7, hpx, bodyY);
+  s += pipe(lpx, isoY+7, lpx, bodyY);
+
+  s += pipe(hpx, bodyY, lpx, bodyY, '#aaa');
+
+  // 2x VENT + 1 EQ on body
+  s += valveSym(vent1X, bodyY, 'vent', 'v');
+  s += ventAtm(vent1X, bodyY, 'up');
+  s += valveSym(eqX, bodyY, 'eq', 'h');
+  s += valveSym(vent2X, bodyY, 'vent', 'v');
+  s += ventAtm(vent2X, bodyY, 'up');
+
+  s += pipe(eqX, bodyY+1, eqX, instrY-2, '#bbb', true);
+  s += instrConn(eqX, instrY, 90);
+
+  return wrapSvg(W, H, s);
+}
+
+// ── Schema: iso-eq-v-eq-iso (5-valve MD55) ───────────────
+// 2x ISO, 2x EQ, 1x VENT (center) on body
+function drawIsoEqVEqIso() {
+  var W = 200, H = 116;
+  var hpx = 44, lpx = 156;
+  var procY = 14;
+  var isoY = 44;
+  var bodyY = 70;
+  var instrY = 100;
+  var eq1X = 74, ventX = 100, eq2X = 126;
+  var s = '';
+
+  s += procConn(hpx, procY, 'HP', 'right');
+  s += procConn(lpx, procY, 'LP', 'left');
+
+  s += pipe(hpx, procY+6, hpx, isoY-7);
+  s += pipe(lpx, procY+6, lpx, isoY-7);
+
+  s += valveSym(hpx, isoY, 'iso', 'v');
+  s += valveSym(lpx, isoY, 'iso', 'v');
+
+  s += pipe(hpx, isoY+7, hpx, bodyY);
+  s += pipe(lpx, isoY+7, lpx, bodyY);
+
+  s += pipe(hpx, bodyY, lpx, bodyY, '#aaa');
+
+  // 2x EQ + 1 VENT center on body
+  s += valveSym(eq1X, bodyY, 'eq', 'h');
+  s += valveSym(ventX, bodyY, 'vent', 'v');
+  s += ventAtm(ventX, bodyY, 'up');
+  s += valveSym(eq2X, bodyY, 'eq', 'h');
+
+  // Instrument from center (but center is occupied by vent, so offset slightly)
+  // Instrument connects from one of the EQ valves
+  s += pipe(eq1X, bodyY+1, eq1X, instrY-2, '#bbb', true);
+  s += instrConn(eq1X, instrY, 90);
+
+  return wrapSvg(W, H, s);
+}
+
+function svgSchema(key) {
+  var map = {
+    'iso-eq-iso':      drawIsoEqIso,
+    'v-iso-eq-iso':    drawVIsoEqIso,
+    'iso-2v-iso':      drawIso2VIso,
+    'iso-v-eq-v-iso':  drawIsoVEqVIso,
+    'iso-eq-v-eq-iso': drawIsoEqVEqIso,
+  };
+  return (map[key] || drawIsoEqIso)();
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function AM() { return valveType === 3 ? MODELS3 : valveType === 4 ? MODELS4 : MODELS5; }
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function hasAT() { return ['YP','YG','AP','AG'].indexOf(oper) >= 0; }
+
+function getSteps() {
+  var m = AM().find(function(x){ return x.code === model; });
+  var s = [{ id: 'valveType' },{ id: 'model' },{ id: 'mat' },{ id: 'conn' }];
+  if (m && m.iface && m.iface.length > 1) s.push({ id: 'iface' });
+  s.push({ id: 'oper' });
+  if (m && m.extras && m.extras.length > 0) s.push({ id: 'extras' });
+  if (m && m.outputConn && m.outputConn.length > 0) s.push({ id: 'outputConn' });
+  s.push({ id: 'quote' });
+  return s;
+}
+
+function buildCode() {
+  var m = AM().find(function(x){ return x.code === model; });
+  if (!m) return '--';
+  var p = [model, mat, conn];
+  if (m.iface) {
+    if (m.iface.length > 1 && iface) p.push(iface);
+    else if (m.iface.length === 1) p.push(m.iface[0]);
+  }
+  if (oper) p.push(oper);
+  if (outputConn) p.push(outputConn);
+  var skip = ['ATK','BRK'];
+  var extStr = Array.from(extras).filter(function(c){ return skip.indexOf(c) < 0; }).map(function(c){ return '.' + c; }).join('');
+  return p.filter(Boolean).join('.') + extStr;
+}
+
+function buildLabel() {
+  var m = AM().find(function(x){ return x.code === model; });
+  return (m ? m.name : model) + ' (' + valveType + '-valve)';
+}
+
+function buildDetails() {
+  var m = AM().find(function(x){ return x.code === model; });
+  var allConn = BASE_CONN.concat(Object.values(EXTRA_CONN));
+  var ifL = 'N/A';
+  if (m && m.iface) {
+    if (m.iface.length > 1) ifL = iface || (IFACE[0] || {}).code;
+    else ifL = m.iface[0];
+  }
+  var skip = ['ATK','BRK'];
+  var extStr = Array.from(extras).filter(function(c){ return skip.indexOf(c) < 0; }).join(', ') || 'None';
+  return {
+    valveType: valveType + '-valve',
+    model: model, modelName: (m || {}).name || '',
+    material: mat, materialName: ((MATERIALS.find(function(x){ return x.code === mat; }) || {}).name || ''),
+    conn: conn, connName: ((allConn.find(function(x){ return x.code === conn; }) || {}).name || ''),
+    iface: ifL, oper: oper, operName: ((OPER.find(function(x){ return x.code === oper; }) || {}).name || ''),
+    extras: extStr, outputConn: outputConn || 'None',
+    atk: extras.has('ATK'), brk: extras.has('BRK'), remarks: remarks,
+  };
+}
+
+function canNext() {
+  var steps = getSteps(), s = steps[step];
+  if (!s) return false;
+  if (s.id === 'valveType')  return valveType !== null;
+  if (s.id === 'model')      return !!model;
+  if (s.id === 'mat')        return !!mat;
+  if (s.id === 'conn')       return !!conn;
+  if (s.id === 'iface')      return !!iface;
+  if (s.id === 'oper')       return !!oper;
+  if (s.id === 'extras' || s.id === 'outputConn') return true;
+  if (s.id === 'quote')      return !!(contact.name && contact.email && contact.company);
+  return false;
+}
+
+var STEP_TITLES = {
+  valveType: 'Valve count', model: 'Model', mat: 'Material',
+  conn: 'Process connector', iface: 'Instrument interface',
+  oper: 'Valve operation', extras: 'Options',
+  outputConn: 'Output connector', quote: 'Review & quote',
+};
+
+// ── Render ────────────────────────────────────────────────
+function render() {
+  var prog  = document.getElementById('prog');
+  var lbl   = document.getElementById('prog-label');
+  var pill  = document.getElementById('code-pill');
+  var ct    = document.getElementById('ct');
+
+  if (productType === null) {
+    prog.innerHTML = ''; lbl.textContent = ''; pill.style.opacity = '0';
+    renderLanding(ct); return;
+  }
+  if (productType !== 'manifold') {
+    prog.innerHTML = ''; lbl.textContent = ''; pill.style.opacity = '0';
+    renderComingSoon(ct); return;
+  }
+
+  var steps = getSteps();
+  prog.innerHTML = steps.map(function(_, i) {
+    var c = 'ps' + (i < step ? ' done' : i === step ? ' active' : '');
+    return '<div class="' + c + '"></div>';
+  }).join('');
+
+  if (step < steps.length) {
+    lbl.textContent = 'Step ' + (step+1) + ' of ' + steps.length + '  —  ' + (STEP_TITLES[steps[step].id] || '');
+    var c = buildCode();
+    if (c !== '--' && step > 1) { pill.textContent = c; pill.style.opacity = '1'; }
+    else pill.style.opacity = '0';
+  } else {
+    lbl.textContent = ''; pill.style.opacity = '0';
+  }
+
+  if (submitted) { renderDone(ct); return; }
+  var s = steps[step];
+  if (!s) { renderQuotePage(ct); return; }
+  var fns = {
+    valveType: renderValveType, model: renderModel, mat: renderMat,
+    conn: renderConn, iface: renderIface, oper: renderOper,
+    extras: renderExtras, outputConn: renderOutputConn, quote: renderQuotePage,
+  };
+  (fns[s.id] || renderValveType)(ct);
+}
+
+function navHtml(backOff, nextLabel, nextOff) {
+  return '<div class="nav">' +
+    '<button class="btn" onclick="goBack()" ' + (backOff ? 'disabled' : '') + '>&#8592; Back</button>' +
+    '<button class="btn pri" onclick="goNext()" ' + (nextOff ? 'disabled' : '') + '>' + nextLabel + '</button>' +
+  '</div>';
+}
+
+// ── Landing ───────────────────────────────────────────────
+function renderLanding(ct) {
+  var items = [
+    { id: 'isovent',    icon: '&#x1F527;', name: 'Isovent',       sub: 'Isolation & vent valves' },
+    { id: 'needlevalve',icon: '&#x1F39A;', name: 'Needle valve',   sub: 'Flow control needle valves' },
+    { id: 'multiport',  icon: '&#x1F500;', name: 'Multiport',      sub: 'Multiport valve assemblies' },
+    { id: 'manifold',   icon: '&#x2699;&#xFE0F;', name: 'Manifold', sub: '3, 4 & 5 valve manifolds', live: true },
+    { id: 'monoflange', icon: '&#x1F529;', name: 'Monoflange',     sub: 'Single block & bleed valves' },
+    { id: 'other',      icon: '&#x1F4AC;', name: 'Something else', sub: 'Other products & custom solutions' },
+  ];
+  var cards = items.map(function(p) {
+    var badge = p.live ? '<div class="live-badge">LIVE</div>' : '';
+    return '<div class="lcard" onclick="selProduct(\'' + p.id + '\')">' +
+      '<div class="licon">' + p.icon + '</div>' +
+      '<div class="lname">' + p.name + '</div>' +
+      '<div class="lsub">' + p.sub + '</div>' + badge + '</div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">What would you like to configure?</div>' +
+    '<div class="sdesc">Select a product category to get started with the configurator.</div>' +
+    '<div class="landing-grid">' + cards + '</div></div>';
+}
+
+function renderComingSoon(ct) {
+  var names = { isovent: 'Isovent', needlevalve: 'Needle valve', multiport: 'Multiport', monoflange: 'Monoflange' };
+  if (productType === 'other') {
+    ct.innerHTML = '<div class="card">' +
+      '<div class="stitle">Product enquiry</div>' +
+      '<div class="sdesc">Describe what you are looking for and our team will recommend the right solution.</div>' +
+      '<div class="form-group"><label>Your enquiry</label>' +
+        '<textarea id="other-remarks" placeholder="e.g. I am looking for a custom valve assembly..." style="min-height:120px;" oninput="remarks=this.value">' + esc(remarks) + '</textarea>' +
+      '</div>' +
+      '<div class="sec-title" style="margin-top:.5rem;">Contact details</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Full name *</label><input placeholder="John Smith" value="' + esc(contact.name) + '" oninput="upC(\'name\',this.value)"></div>' +
+        '<div class="form-group"><label>Company *</label><input placeholder="Company B.V." value="' + esc(contact.company) + '" oninput="upC(\'company\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Phone</label><input placeholder="+31 6 12345678" value="' + esc(contact.phone) + '" oninput="upC(\'phone\',this.value)"></div>' +
+        '<div class="form-group"><label>Email *</label><input type="email" placeholder="you@company.com" value="' + esc(contact.email) + '" oninput="upC(\'email\',this.value)"></div>' +
+      '</div>' +
+      (sendError ? '<div class="err-msg">' + sendError + '</div>' : '') +
+      '<div class="nav">' +
+        '<button class="btn" onclick="selProduct(null)">&#8592; Back</button>' +
+        '<button class="btn pri" onclick="sendOtherEnquiry()" id="send-other-btn" ' +
+          ((contact.name && contact.email && contact.company && remarks) ? '' : 'disabled') + '>Send enquiry</button>' +
+      '</div></div>';
+    return;
+  }
+  var nm = names[productType] || 'This product';
+  ct.innerHTML = '<div class="card" style="text-align:center;padding:2.5rem 1.5rem;">' +
+    '<div style="font-size:40px;margin-bottom:1rem;">&#x1F6A7;</div>' +
+    '<div class="stitle" style="margin-bottom:.5rem;">' + nm + ' configurator coming soon</div>' +
+    '<p style="font-size:13px;color:#666;margin-bottom:1.5rem;line-height:1.6;">Contact us directly and we\'ll help you configure the right product.</p>' +
+    '<div style="display:flex;gap:10px;justify-content:center;">' +
+    '<button class="btn" onclick="selProduct(null)">&#8592; Back</button>' +
+    '<a href="mailto:ricky.jongenelen@multi-instruments.com" style="text-decoration:none;"><button class="btn pri">Contact us</button></a>' +
+    '</div></div>';
+}
+
+// ── Step renderers ────────────────────────────────────────
+function renderValveType(ct) {
+  var items = [
+    { n: 3, sub: 'Double isolate + equalize' },
+    { n: 4, sub: 'Isolate + equalize + vent' },
+    { n: 5, sub: 'Double equalize/vent' },
+  ];
+  var cards = items.map(function(t) {
+    return '<div class="tcard' + (valveType === t.n ? ' sel' : '') + '" onclick="selVT(' + t.n + ')">' +
+      '<div class="tc-num">' + t.n + '</div>' +
+      '<div class="tc-label">' + t.n + '-valve</div>' +
+      '<div class="tc-sub">' + t.sub + '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Select valve count</div>' +
+    '<div class="sdesc">Choose the number of valves your application requires.</div>' +
+    '<div class="type-grid">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderModel(ct) {
+  var legend = '<div class="legend">' +
+    '<span style="font-size:12px;color:#555;font-weight:600;">Valve legend:</span>' +
+    '<span class="legend-item"><span class="legend-dot" style="background:'+C_ISO+'"></span>Isolate</span>' +
+    '<span class="legend-item"><span class="legend-dot" style="background:'+C_EQ+'"></span>Equalize</span>' +
+    '<span class="legend-item"><span class="legend-dot" style="background:'+C_VENT+'"></span>Vent</span>' +
+  '</div>';
+  var cards = AM().map(function(m) {
+    return '<div class="oc' + (model === m.code ? ' sel' : '') + '" onclick="selModel(\'' + m.code + '\')">' +
+      '<div class="cc">' + m.code + '</div><div class="cdiv"></div>' +
+      '<div class="cn">' + m.name + '</div>' +
+      '<div class="cs">' + m.sub + '</div>' +
+      '<div class="valve-schema">' + svgSchema(m.schema) + '</div>' +
+    '</div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Select model</div>' +
+    legend + '<div class="og">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderMat(ct) {
+  var cards = MATERIALS.map(function(o) {
+    return '<div class="oc2' + (mat === o.code ? ' sel' : '') + '" onclick="selMat(\'' + o.code + '\')">' +
+      '<div class="cc">' + o.code + '</div><div class="cn">' + o.name + '</div><div class="cs">' + o.sub + '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Select material</div>' +
+    '<div class="sdesc">Wetted parts material. All materials NACE MR01-75 compliant.</div>' +
+    '<div class="og2">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderConn(ct) {
+  var m = AM().find(function(x){ return x.code === model; });
+  var all = BASE_CONN.concat((m.extraConn || []).map(function(c){ return EXTRA_CONN[c]; }));
+  var cards = all.map(function(o) {
+    return '<div class="oc2' + (conn === o.code ? ' sel' : '') + '" onclick="selConn(\'' + o.code + '\')">' +
+      '<div class="cc">' + o.code + '</div><div class="cn">' + o.name + '</div><div class="cs">' + o.sub + '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Select process connector</div>' +
+    '<div class="sdesc">Connection type and size for the process side.</div>' +
+    '<div class="og2">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderIface(ct) {
+  var m = AM().find(function(x){ return x.code === model; });
+  var opts = IFACE.filter(function(o){ return m.iface.indexOf(o.code) >= 0; });
+  var cards = opts.map(function(o) {
+    return '<div class="oc2' + (iface === o.code ? ' sel' : '') + '" onclick="selIface(\'' + o.code + '\')">' +
+      '<div class="cc">' + o.code + '</div><div class="cn">' + o.name + '</div><div class="cs">' + o.sub + '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Select transmitter interface</div>' +
+    '<div class="sdesc">Mounting interface on the instrument side.</div>' +
+    '<div class="og2">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderOper(ct) {
+  var cards = OPER.map(function(o) {
+    return '<div class="oc2' + (oper === o.code ? ' sel' : '') + '" onclick="selOper(\'' + o.code + '\')">' +
+      '<div class="cc">' + o.code + '</div><div class="cn">' + o.name + '</div><div class="cs">' + o.sub + '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Valve operation & packing</div>' +
+    '<div class="sdesc">Mixed mode: isolate valves are T-bar, equalize/vent valves are Anti-tamper.</div>' +
+    '<div class="note">PTFE: max 200°C &nbsp;|&nbsp; Graphite: max 450°C &nbsp;|&nbsp; Max pressure: 420 Bar (316SS), up to 680 Bar with HP option</div>' +
+    '<div class="og2">' + cards + '</div>' + navHtml(false, 'Next &#8594;', !canNext()) + '</div>';
+}
+
+function renderExtras(ct) {
+  var m = AM().find(function(x){ return x.code === model; });
+  var opts = (m.extras || []).map(function(c){ return EXTRA_OPTS[c]; }).filter(Boolean);
+  var rows = opts.map(function(o) {
+    return '<div class="chk-row' + (extras.has(o.code) ? ' sel' : '') + '" onclick="togExtra(\'' + o.code + '\')">' +
+      '<div class="chkbox"></div>' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111;">' + o.name +
+        '<span class="chk-code">' + o.code + '</span></div>' +
+        '<div style="font-size:11px;color:#888;margin-top:2px;">' + o.sub + '</div>' +
+      '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Additional options</div>' +
+    '<div class="sdesc">All options are optional. Filling/test connectors include the test port.</div>' +
+    rows + '<div style="height:.75rem;"></div>' + navHtml(false, 'Next &#8594;', false) + '</div>';
+}
+
+function renderOutputConn(ct) {
+  var m = AM().find(function(x){ return x.code === model; });
+  var opts = (m.outputConn || []).map(function(c){ return OUTPUT_CONN[c]; }).filter(Boolean);
+  var rows = opts.map(function(o) {
+    return '<div class="chk-row' + (outputConn === o.code ? ' sel' : '') + '" onclick="togOut(\'' + o.code + '\')">' +
+      '<div class="chkbox"></div>' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111;">' + o.name +
+        '<span class="chk-code">' + o.code + '</span></div>' +
+        '<div style="font-size:11px;color:#888;margin-top:2px;">' + o.sub + '</div>' +
+      '</div></div>';
+  }).join('');
+  ct.innerHTML = '<div class="card"><div class="stitle">Output connector <span style="font-size:12px;font-weight:400;color:#888;">(optional)</span></div>' +
+    '<div class="sdesc">Select an output connector for the instrument side, or skip to continue.</div>' +
+    rows + '<div style="height:.75rem;"></div>' + navHtml(false, 'Next &#8594;', false) + '</div>';
+}
+
+function renderQuotePage(ct) {
+  var code = buildCode();
+  var m = AM().find(function(x){ return x.code === model; });
+  var allConn = BASE_CONN.concat(Object.values(EXTRA_CONN));
+  var ifL = 'N/A — remote mount';
+  if (m && m.iface) {
+    if (m.iface.length > 1) ifL = iface ? ((IFACE.find(function(x){ return x.code === iface; }) || {}).name || iface) : '--';
+    else ifL = ((IFACE.find(function(x){ return m.iface && x.code === m.iface[0]; }) || {}).name || '');
+  }
+  var skip = ['ATK','BRK'];
+  var bp = [model, mat, conn];
+  if (m && m.iface) {
+    if (m.iface.length > 1 && iface) bp.push(iface);
+    else if (m.iface && m.iface.length === 1) bp.push(m.iface[0]);
+  }
+  if (oper) bp.push(oper);
+  if (outputConn) bp.push(outputConn);
+  var segs = bp.filter(Boolean).map(function(p){ return '<span class="seg">' + p + '</span>'; }).join('');
+  extras.forEach(function(c){ if (skip.indexOf(c) < 0) segs += '<span class="seg o">' + c + '</span>'; });
+  var extStr = Array.from(extras).filter(function(c){ return skip.indexOf(c) < 0; }).join(', ') || 'None';
+  var rows = [
+    ['Valve type', valveType + '-valve manifold'],
+    ['Model', model + ' — ' + ((m || {}).name || '')],
+    ['Material', ((MATERIALS.find(function(x){ return x.code === mat; }) || {}).name || '--')],
+    ['Process connection', ((allConn.find(function(x){ return x.code === conn; }) || {}).name || '--')],
+    ['Instrument interface', ifL],
+    ['Valve operation', ((OPER.find(function(x){ return x.code === oper; }) || {}).name || '--')],
+    ['Additional options', extStr],
+    ['Output connector', outputConn || 'None'],
+  ].map(function(r){ return '<tr><td>' + r[0] + '</td><td style="font-weight:600">' + r[1] + '</td></tr>'; }).join('');
+
+  var listHtml = '';
+  if (quoteList.length > 0) {
+    var items = quoteList.map(function(item, i) {
+      return '<div class="quote-item">' +
+        '<div class="quote-item-num">' + (i+1) + '</div>' +
+        '<div style="flex:1">' +
+          '<div class="quote-item-code">' + item.code + '</div>' +
+          '<div style="font-size:11px;color:#888;">' + item.label + ' &nbsp;&bull;&nbsp; qty: ' + item.qty + '</div>' +
+        '</div>' +
+        '<button class="quote-item-del" onclick="removeItem(' + i + ')" title="Remove">&#10005;</button>' +
+      '</div>';
+    }).join('');
+    listHtml = '<div class="sec-title">Items already in quote (' + quoteList.length + ')</div>' +
+      '<div class="quote-list">' + items + '</div>';
+  }
+
+  var atkRow = hasAT()
+    ? '<div class="chk-row' + (extras.has('ATK') ? ' sel' : '') + '" onclick="togExtra(\'ATK\')">' +
+        '<div class="chkbox"></div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111;">Anti-tamper key' +
+        '<span class="chk-code">ATK</span></div><div style="font-size:11px;color:#888;margin-top:2px;">Key to operate anti-tamper valves</div></div></div>'
+    : '<p style="font-size:12px;color:#aaa;font-style:italic;margin-bottom:8px;">Anti-tamper key not applicable for TP / TG valve operation.</p>';
+  var brkRow = '<div class="chk-row' + (extras.has('BRK') ? ' sel' : '') + '" onclick="togExtra(\'BRK\')">' +
+    '<div class="chkbox"></div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111;">Mounting bracket' +
+    '<span class="chk-code">BRK</span></div><div style="font-size:11px;color:#888;margin-top:2px;">Bracket model TBD — confirmed in quote</div></div></div>';
+
+  ct.innerHTML =
+    listHtml +
+    '<div class="result-card">' +
+      '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;">Model code</div>' +
+      '<div class="rcode">' + code + '</div>' +
+      '<div class="segs">' + segs + '</div>' +
+      '<table class="st">' + rows + '</table>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="sec-title">Quantity</div>' +
+      '<div class="qty-row">' +
+        '<button class="qty-btn" onclick="chgQty(-1)">&#8722;</button>' +
+        '<input class="qty-input" id="qty-inp" type="number" min="1" value="' + qty + '" oninput="setQty(this.value)">' +
+        '<button class="qty-btn" onclick="chgQty(1)">+</button>' +
+        '<span style="font-size:13px;color:#888;">pieces</span>' +
+      '</div>' +
+      '<div class="sec-title">Accessories</div>' +
+      atkRow + brkRow +
+      '<div style="height:.75rem;"></div>' +
+      '<div class="sec-title">Contact details</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Full name *</label><input placeholder="John Smith" value="' + esc(contact.name) + '" oninput="upC(\'name\',this.value)"></div>' +
+        '<div class="form-group"><label>Company *</label><input placeholder="Company B.V." value="' + esc(contact.company) + '" oninput="upC(\'company\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Phone</label><input placeholder="+31 6 12345678" value="' + esc(contact.phone) + '" oninput="upC(\'phone\',this.value)"></div>' +
+        '<div class="form-group"><label>Email *</label><input type="email" placeholder="you@company.com" value="' + esc(contact.email) + '" oninput="upC(\'email\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-group"><label>Remarks / questions</label>' +
+        '<textarea placeholder="Specific requirements, questions or remarks..." oninput="remarks=this.value">' + esc(remarks) + '</textarea>' +
+      '</div>' +
+      (sendError ? '<div class="err-msg">' + sendError + '</div>' : '') +
+      '<div class="nav">' +
+        '<button class="btn" onclick="goBack()">&#8592; Back</button>' +
+        '<button class="btn pri" id="send-btn" onclick="sendQuote()" ' + (canNext() && !sending ? '' : 'disabled') + '>' +
+          (sending ? 'Sending…' : 'Send quote request') +
+        '</button>' +
+        '<button class="btn" onclick="addAndConfigure()">+ Add another model</button>' +
+        '<button class="btn danger" onclick="reset()">Start over</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderDone(ct) {
+  var listHtml = '';
+  if (quoteList.length > 0) {
+    var items = quoteList.map(function(item, i) {
+      return '<div class="quote-item">' +
+        '<div class="quote-item-num">' + (i+1) + '</div>' +
+        '<div style="flex:1">' +
+          '<div class="quote-item-code">' + item.code + '</div>' +
+          '<div style="font-size:11px;color:#888;">' + item.label +
+            ' &nbsp;&bull;&nbsp; qty: ' + item.qty +
+            (item.details.atk ? ' &nbsp;&bull;&nbsp; ATK' : '') +
+            (item.details.brk ? ' &nbsp;&bull;&nbsp; BRK' : '') +
+          '</div>' +
+        '</div></div>';
+    }).join('');
+    listHtml = '<div class="sec-title" style="margin-bottom:.75rem;">Items in this quote (' + quoteList.length + ')</div>' +
+      '<div class="quote-list">' + items + '</div>';
+  }
+  ct.innerHTML = '<div class="card"><div class="success-wrap">' +
+    '<div class="success-icon"></div>' +
+    '<h3>Quote request sent!</h3>' +
+    '<p>Your request has been sent to Multi Instruments.<br>We will reach out to <strong>' + esc(contact.email) + '</strong> shortly.</p>' +
+    '</div>' + listHtml +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:1rem;">' +
+    '<button class="btn pri" onclick="reset()">Start over</button>' +
+    '<button class="btn" onclick="configureAnother()">+ Configure another</button>' +
+    '</div></div>';
+}
+
+// ── Actions ───────────────────────────────────────────────
+function sendOtherEnquiry() {
+  if (!contact.name || !contact.email || !contact.company || !remarks) return;
+  sending = true; sendError = ''; render();
+  setTimeout(function(){ sending = false; submitted = true; render(); }, 900);
+}
+
+function sendQuote() {
+  if (!canNext() || sending) return;
+  quoteList.push({ code: buildCode(), label: buildLabel(), qty: qty, details: buildDetails() });
+  sending = true; sendError = ''; render();
+  setTimeout(function(){ sending = false; submitted = true; render(); }, 900);
+}
+
+function addAndConfigure() {
+  quoteList.push({ code: buildCode(), label: buildLabel(), qty: qty, details: buildDetails() });
+  step = 0; valveType = null; model = null; mat = null; conn = null;
+  iface = null; oper = null; qty = 1; outputConn = null;
+  extras = new Set(); remarks = ''; submitted = false; sending = false; sendError = '';
+  render();
+}
+
+function removeItem(idx) { quoteList.splice(idx, 1); render(); }
+
+function reset() {
+  productType = null; step = 0; valveType = null; model = null; mat = null;
+  conn = null; iface = null; oper = null; qty = 1; outputConn = null;
+  extras = new Set(); remarks = '';
+  contact = { name: '', company: '', phone: '', email: '' };
+  submitted = false; sending = false; sendError = ''; quoteList = [];
+  render();
+}
+
+function configureAnother() {
+  step = 0; valveType = null; model = null; mat = null; conn = null;
+  iface = null; oper = null; qty = 1; outputConn = null;
+  extras = new Set(); remarks = ''; submitted = false; sending = false; sendError = '';
+  render();
+}
+
+function selProduct(id) {
+  productType = id;
+  if (id === 'manifold') {
+    step = 0; valveType = null; model = null; mat = null; conn = null;
+    iface = null; oper = null; qty = 1; outputConn = null; extras = new Set(); remarks = '';
+  }
+  render();
+}
+function selVT(v) { valveType = v; model = null; mat = null; conn = null; iface = null; oper = null; outputConn = null; extras = new Set(); render(); }
+function selModel(c) {
+  model = c; mat = null; conn = null; iface = null; oper = null; outputConn = null; extras = new Set();
+  var m = AM().find(function(x){ return x.code === c; });
+  if (m && m.iface && m.iface.length === 1) iface = m.iface[0];
+  render();
+}
+function selMat(c)   { mat   = c; render(); }
+function selConn(c)  { conn  = c; render(); }
+function selIface(c) { iface = c; render(); }
+function selOper(c)  { oper  = c; render(); }
+function togExtra(c) { if (extras.has(c)) extras.delete(c); else extras.add(c); render(); }
+function togOut(c)   { outputConn = outputConn === c ? null : c; render(); }
+function chgQty(d)   { qty = Math.max(1, qty + d); var el = document.getElementById('qty-inp'); if (el) el.value = qty; }
+function setQty(v)   { qty = Math.max(1, parseInt(v) || 1); }
+
+function upC(k, v) {
+  contact[k] = v;
+  var b = document.getElementById('send-btn');
+  if (b) b.disabled = !canNext() || sending;
+  var b2 = document.getElementById('send-other-btn');
+  if (b2) b2.disabled = !(contact.name && contact.email && contact.company && remarks);
+}
+
+function goNext() {
+  var steps = getSteps(), s = steps[step];
+  if (canNext() || s.id === 'extras' || s.id === 'outputConn') { step++; render(); }
+}
+function goBack() { if (step > 0) { step--; render(); } }
+
+render();
+</script>
+</body>
+</html>
