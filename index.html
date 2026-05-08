@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multi Instruments — Product Configurator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── Topbar ──────────────────────────────────────────── -->
+<header class="topbar">
+  <a class="logo-wrap" href="#" onclick="reset();return false;">
+    <!-- Multi Instruments logo mark -->
+    <svg class="logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer arc (gauge face) -->
+      <path d="M8 36 A20 20 0 1 1 40 36" stroke="#C0202A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Inner arc -->
+      <path d="M13 36 A15 15 0 1 1 35 36" stroke="#C0202A" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+      <!-- Gauge pointer -->
+      <line x1="24" y1="24" x2="34" y2="14" stroke="#C0202A" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="3" fill="#C0202A"/>
+      <!-- Tick marks -->
+      <line x1="8"  y1="36" x2="10" y2="32" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="40" y1="36" x2="38" y2="32" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="14" y1="15" x2="16" y2="18" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="34" y1="15" x2="32" y2="18" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <line x1="24" y1="8"  x2="24" y2="12" stroke="#C0202A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+    <div class="logo-text">
+      <span class="l1">Multi</span>
+      <span class="l2">Instruments</span>
+      <span class="l3">Instrumentation</span>
+    </div>
+  </a>
+
+  <div class="topbar-right">
+    <nav class="topbar-nav">
+      <a href="#configurator">Configurator</a>
+      <a href="mailto:ricky.jongenelen@multi-instruments.com">Contact</a>
+    </nav>
+    <div class="topbar-divider"></div>
+    <span class="topbar-badge">LIVE</span>
+  </div>
+</header>
+
+<!-- ── Hero ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Multi Instruments — Online Configurator</div>
+      <h1>Configure your<br><em>manifold valve</em><br>in minutes</h1>
+      <p class="hero-sub">
+        Select valve count, model, material and connection — get your exact product code and request a quote directly. No spreadsheets, no back-and-forth.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-hero" href="#configurator">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="7" stroke="white" stroke-width="1.5"/>
+            <polyline points="5.5,8 8,10.5 10.5,8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="8" y1="5" x2="8" y2="10.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Start configurator
+        </a>
+        <a class="btn-hero-ghost" href="mailto:ricky.jongenelen@multi-instruments.com">
+          Contact us
+        </a>
+      </div>
+
+      <div class="hero-specs">
+        <div class="hero-spec">
+          <div class="val">3–5</div>
+          <div class="lbl">Valve configurations</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">9</div>
+          <div class="lbl">Material grades</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">680 Bar</div>
+          <div class="lbl">Max working pressure</div>
+        </div>
+        <div class="hero-spec">
+          <div class="val">NACE</div>
+          <div class="lbl">MR01-75 compliant</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero visual: mini manifold schematic -->
+    <div class="hero-visual">
+      <div class="hero-visual-inner">
+        <div class="hero-visual-label">5-valve manifold — MD55F</div>
+        <svg width="212" height="130" viewBox="0 0 212 130" xmlns="http://www.w3.org/2000/svg">
+          <!-- Process connections -->
+          <rect x="39" y="12" width="8" height="8" rx="1" fill="#888" transform="rotate(45,43,16)"/>
+          <text x="50" y="19" font-size="7.5" font-weight="700" fill="#555" font-family="Arial,sans-serif">HP</text>
+          <rect x="157" y="12" width="8" height="8" rx="1" fill="#888" transform="rotate(45,161,16)"/>
+          <text x="150" y="19" font-size="7.5" font-weight="700" fill="#555" font-family="Arial,sans-serif" text-anchor="end">LP</text>
+
+          <!-- Stems: process → ISO valves -->
+          <line x1="43" y1="22" x2="43" y2="42" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="161" y1="22" x2="161" y2="42" stroke="#bbb" stroke-width="1.5"/>
+
+          <!-- ISO valves (red bowtie, vertical) -->
+          <line x1="36" y1="42" x2="50" y2="42" stroke="#C0202A" stroke-width="1.5"/>
+          <polygon points="36,42 50,42 43,49" fill="#C0202A" opacity="0.88"/>
+          <polygon points="36,56 50,56 43,49" fill="#C0202A" opacity="0.88"/>
+          <line x1="36" y1="56" x2="50" y2="56" stroke="#C0202A" stroke-width="1.5"/>
+
+          <line x1="154" y1="42" x2="168" y2="42" stroke="#C0202A" stroke-width="1.5"/>
+          <polygon points="154,42 168,42 161,49" fill="#C0202A" opacity="0.88"/>
+          <polygon points="154,56 168,56 161,49" fill="#C0202A" opacity="0.88"/>
+          <line x1="154" y1="56" x2="168" y2="56" stroke="#C0202A" stroke-width="1.5"/>
+
+          <!-- Stems: ISO → body -->
+          <line x1="43" y1="56" x2="43" y2="74" stroke="#bbb" stroke-width="1.5"/>
+          <line x1="161" y1="56" x2="161" y2="74" stroke="#bbb" stroke-width="1.5"/>
+
+          <!-- Manifold body -->
+          <line x1="43" y1="74" x2="161" y2="74" stroke="#aaa" stroke-width="1.5"/>
+
+          <!-- EQ1 (blue, horizontal) -->
+          <line x1="79" y1="67" x2="79" y2="81" stroke="#1a4db8" stroke-width="1.5"/>
+          <polygon points="73,67 73,81 79,74" fill="#1a4db8" opacity="0.88"/>
+          <polygon points="85,67 85,81 79,74" fill="#1a4db8" opacity="0.88"/>
+          <line x1="85" y1="67" x2="85" y2="81" stroke="#1a4db8" stroke-width="1.5"/>
+
+          <!-- VENT (green, vertical + arrow) -->
+          <line x1="95" y1="74" x2="109" y2="74" stroke="#0e8a65" stroke-width="1.5"/>
+          <polygon points="95,68 109,68 102,74" fill="#0e8a65" opacity="0.88"/>
+          <polygon points="95,80 109,80 102,74" fill="#0e8a65" opacity="0.88"/>
+          <line x1="95" y1="80" x2="109" y2="80" stroke="#0e8a65" stroke-width="1.5"/>
+          <!-- vent arrow up -->
+          <line x1="102" y1="58" x2="102" y2="67" stroke="#0e8a65" stroke-width="1.5"/>
+          <polyline points="99,62 102,58 105,62" stroke="#0e8a65" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- EQ2 (blue, horizontal) -->
+          <line x1="119" y1="67" x2="119" y2="81" stroke="#1a4db8" stroke-width="1.5"/>
+          <polygon points="113,67 113,81 119,74" fill="#1a4db8" opacity="0.88"/>
+          <polygon points="125,67 125,81 119,74" fill="#1a4db8" opacity="0.88"/>
+          <line x1="125" y1="67" x2="125" y2="81" stroke="#1a4db8" stroke-width="1.5"/>
+
+          <!-- Stem: body → instrument -->
+          <line x1="79" y1="75" x2="79" y2="100" stroke="#bbb" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+          <!-- Instrument -->
+          <line x1="30" y1="104" x2="128" y2="104" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="79" y="114" font-size="7" fill="#aaa" font-family="Arial,sans-serif" text-anchor="middle">DP transmitter</text>
+
+          <!-- Legend -->
+          <circle cx="14" cy="120" r="4" fill="#C0202A" opacity="0.88"/>
+          <text x="20" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Isolate</text>
+          <circle cx="58" cy="120" r="4" fill="#1a4db8" opacity="0.88"/>
+          <text x="64" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Equalize</text>
+          <circle cx="106" cy="120" r="4" fill="#0e8a65" opacity="0.88"/>
+          <text x="112" y="123" font-size="7" fill="#666" font-family="Arial,sans-serif">Vent</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Configurator ─────────────────────────────────────── -->
+<section id="configurator">
+  <div class="main">
+    <div class="step-header">
+      <div class="prog" id="prog"></div>
+      <div class="prog-meta">
+        <div class="prog-label" id="prog-label"></div>
+        <div class="code-pill" id="code-pill" style="opacity:0">—</div>
+      </div>
+    </div>
+    <div id="ct"></div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────── -->
+<footer class="footer">
+  <p>
+    <strong>Multi Instruments B.V.</strong> &nbsp;&bull;&nbsp;
+    <a href="mailto:ricky.jongenelen@multi-instruments.com">ricky.jongenelen@multi-instruments.com</a>
+  </p>
+  <p style="margin-top:4px;">Product codes generated by this configurator are indicative. Final specification confirmed in formal quote.</p>
+</footer>
+
+<script src="configurator.js"></script>
+<script>render();</script>
+</body>
+</html>
