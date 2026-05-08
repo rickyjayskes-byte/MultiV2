@@ -97,9 +97,9 @@ var EXTRA_OPTS = {
 };
 
 // ── P&ID Valve Schema SVGs ────────────────────────────────
-var C_ISO  = '#C0202A';
-var C_EQ   = '#1a4db8';
-var C_VENT = '#0e8a65';
+var C_ISO  = '#1a4db8';
+var C_EQ   = '#0e8a65';
+var C_VENT = '#C0202A';
 
 // Gate/globe valve symbol: two filled triangles meeting at center
 // type: 'iso' | 'eq' | 'vent'
