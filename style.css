@@ -479,6 +479,8 @@ body {
   .form-row { grid-template-columns: 1fr; }
   .topbar-nav { display: none; }
   .topbar-divider { display: none; }
+  .w-layout { grid-template-columns: 1fr !important; }
+  .w-opts { grid-template-columns: repeat(2,1fr) !important; }
 }
 @media (max-width: 480px) {
   .type-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }

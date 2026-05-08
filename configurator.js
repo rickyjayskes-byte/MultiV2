@@ -10,6 +10,57 @@ var contact = { name: '', company: '', phone: '', email: '' };
 var submitted = false, sending = false, sendError = '';
 var quoteList = [];
 
+// ── Winterization state ───────────────────────────────────
+var wState = {
+  name: '', company: '', phone: '', email: '', remarks: '',
+  ambient: '-45°C', heatingSource: 'Electric', voltage: '240VAC',
+  manifold: 'Three Valve', application: 'Standard DP',
+  processTemp: '-40 to 200°C', materials: 'AISI 316L (NACE)',
+  instrument: 'IEC 61518', process: 'BSPP',
+  manufacturer: 'Rosemount', model: '3051SMV',
+  focusedField: 'Application', submitted: false, sending: false,
+};
+
+var W_OPTIONS = {
+  'Ambient':        ['-20°C', '-45°C', '-50°C', '-55°C', '-60°C'],
+  'Heating Source': ['Electric', 'Steam/Glycol'],
+  'Voltage':        ['120VAC', '240VAC', '277VAC', 'n/a'],
+  'Manifold':       ['Two Valve', 'Three Valve', 'Four Valve', 'Five Valve', 'DBB Special'],
+  'Application':    ['Static Pressure', 'Standard DP', 'DP Flow', 'DP Level', 'Absolute Pressure'],
+  'Process Temp':   ['-40 to 200°C', '-40 to 450°C', '-40 to -50°C'],
+  'Materials':      ['AISI 316L (NACE)', 'Duplex', 'Monel', 'Hastelloy', 'Special'],
+  'Instrument':     ['DIN 19213', 'IEC 61518', 'Rosemount Integral Mount'],
+  'Process':        ['NPT', 'BSPP', 'BSPT'],
+};
+var W_KEY_MAP = {
+  'Ambient': 'ambient', 'Heating Source': 'heatingSource', 'Voltage': 'voltage',
+  'Manifold': 'manifold', 'Application': 'application', 'Process Temp': 'processTemp',
+  'Materials': 'materials', 'Instrument': 'instrument', 'Process': 'process',
+};
+var W_HELP = {
+  'Ambient':        'Defines the minimum outdoor temperature the winterization package must handle.',
+  'Heating Source': 'Select the preferred heating method for freeze protection.',
+  'Voltage':        'Narrows compatible electric heating configurations and control components.',
+  'Manifold':       'Specifies the manifold arrangement for the instrument connection set.',
+  'Application':    'Identifies the intended pressure or differential pressure use case.',
+  'Process Temp':   'Process temperature range the enclosure and components must tolerate.',
+  'Materials':      'Narrows wetted material options for corrosion, NACE, and media compatibility.',
+  'Instrument':     'Identifies the mounting/interface standard for the instrument assembly.',
+  'Process':        'Sets the process connection standard or thread style.',
+  'Manufacturer':   'Browse supported transmitter manufacturers.',
+  'Model':          'Matching model families for the selected manufacturer.',
+};
+var W_MANUFACTURERS = {
+  'Rosemount':         ['3051SMV','3051STG','3051STA','3051SCD','3051SCG','3051SCA','3051TG','3051TA','3051CD','3051CG','3051CA','2051CD','2051CG','2051TG','2051TA','2051G','2088A','2088G'],
+  'Yokogawa':          ['EJX530','EJX630','EJX430','EJX440','EJA110E','EJX110A','EJA130E','EJX130A','EJA120E','EJX120A','EJA310E','EJX310A','EJA510E','EJX510A','EJX610A','EJX910A','EJX930A'],
+  'Endress + Hauser':  ['PMC71','PMD55','PMD75','PMP51','PMP71'],
+  'Honeywell':         ['SMV800','STD800','STG800','STA800','STD700','STG700','STA700'],
+  'Krohne':            ['PC 5060','DP 7060'],
+  'ABB':               ['266DSH','266MST','266GST','266HSH','266CSH','266CST','266JSH','266JST','266 Modbus'],
+  'Foxboro':           ['IAP10','IAP20','IGP10','IGP20','IGP25','IGP50','IGP60','IDP10','IDP15','IDP25','IDP31','IDP32','IDP50','IMV25','IMV30','IMV31'],
+  'Siemens':           ['P500','P420','P320','P410','P DS III','P310'],
+};
+
 // ── Product data ─────────────────────────────────────────
 var MODELS3 = [
   { code: 'MD31D', name: 'Direct mount',      sub: 'Threaded process connections & impulse piping',           schema: 'iso-eq-iso',      iface: ['ISO','IM'], extraConn: [],              extras: ['TST'],                outputConn: [] },
@@ -485,6 +536,10 @@ function render() {
     prog.innerHTML = ''; lbl.textContent = ''; pill.style.opacity = '0';
     renderLanding(ct); return;
   }
+  if (productType === 'winterization') {
+    prog.innerHTML = ''; lbl.textContent = ''; pill.style.opacity = '0';
+    renderWinterization(ct); return;
+  }
   if (productType !== 'manifold') {
     prog.innerHTML = ''; lbl.textContent = ''; pill.style.opacity = '0';
     renderComingSoon(ct); return;
@@ -529,9 +584,10 @@ function renderLanding(ct) {
     { id: 'isovent',    icon: '&#x1F527;', name: 'Isovent',       sub: 'Isolation & vent valves' },
     { id: 'needlevalve',icon: '&#x1F39A;', name: 'Needle valve',   sub: 'Flow control needle valves' },
     { id: 'multiport',  icon: '&#x1F500;', name: 'Multiport',      sub: 'Multiport valve assemblies' },
-    { id: 'manifold',   icon: '&#x2699;&#xFE0F;', name: 'Manifold', sub: '3, 4 & 5 valve manifolds', live: true },
-    { id: 'monoflange', icon: '&#x1F529;', name: 'Monoflange',     sub: 'Single block & bleed valves' },
-    { id: 'other',      icon: '&#x1F4AC;', name: 'Something else', sub: 'Other products & custom solutions' },
+    { id: 'manifold',      icon: '&#x2699;&#xFE0F;', name: 'Manifold',      sub: '3, 4 & 5 valve manifolds', live: true },
+    { id: 'winterization', icon: '&#x2744;&#xFE0F;', name: 'Winterization', sub: 'Freeze protection solutions', live: true },
+    { id: 'monoflange',    icon: '&#x1F529;',        name: 'Monoflange',    sub: 'Single block & bleed valves' },
+    { id: 'other',         icon: '&#x1F4AC;',        name: 'Something else', sub: 'Other products & custom solutions' },
   ];
   var cards = items.map(function(p) {
     var badge = p.live ? '<div class="live-badge">LIVE</div>' : '';
@@ -580,6 +636,165 @@ function renderComingSoon(ct) {
     '<button class="btn" onclick="selProduct(null)">&#8592; Back</button>' +
     '<a href="mailto:ricky.jongenelen@multi-instruments.com" style="text-decoration:none;"><button class="btn pri">Contact us</button></a>' +
     '</div></div>';
+}
+
+// ── Winterization renderer ────────────────────────────────
+function renderWinterization(ct) {
+  if (wState.submitted) { renderWinterizationDone(ct); return; }
+
+  var models = W_MANUFACTURERS[wState.manufacturer] || [];
+
+  // Scorecard rows
+  var envFit = wState.ambient === '-60°C' ? 'Extreme service' : (wState.ambient === '-55°C' || wState.ambient === '-50°C') ? 'Low-temp service' : 'Standard cold-weather service';
+  var heatPath = wState.heatingSource === 'Electric' ? wState.heatingSource + ' · ' + wState.voltage : wState.heatingSource;
+  var scoreRows = [
+    { label: 'Environmental fit',  val: envFit },
+    { label: 'Heating path',       val: heatPath },
+    { label: 'Measurement style',  val: wState.application + ' · ' + wState.manifold },
+    { label: 'Instrument match',   val: wState.manufacturer + ' ' + wState.model },
+    { label: 'Process connection', val: wState.process + ' · ' + wState.instrument },
+    { label: 'Material',           val: wState.materials },
+  ];
+
+  // Options selects
+  var optHtml = Object.keys(W_OPTIONS).map(function(label) {
+    var key = W_KEY_MAP[label];
+    var opts = W_OPTIONS[label].map(function(o) {
+      return '<option value="' + esc(o) + '"' + (wState[key] === o ? ' selected' : '') + '>' + esc(o) + '</option>';
+    }).join('');
+    return '<div class="form-group">' +
+      '<label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">' + label + '</label>' +
+      '<select onchange="wSet(\'' + key + '\',this.value)" onfocus="wFocus(\'' + label + '\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#333;background:#fff;">' +
+      opts + '</select></div>';
+  }).join('');
+
+  // Manufacturer options
+  var mfgOpts = Object.keys(W_MANUFACTURERS).map(function(m) {
+    return '<option value="' + esc(m) + '"' + (wState.manufacturer === m ? ' selected' : '') + '>' + esc(m) + '</option>';
+  }).join('');
+
+  // Model options
+  var mdlOpts = models.map(function(m) {
+    return '<option value="' + esc(m) + '"' + (wState.model === m ? ' selected' : '') + '>' + esc(m) + '</option>';
+  }).join('');
+
+  var canSend = !!(wState.name && wState.email && wState.company);
+
+  ct.innerHTML =
+    // ── Layout wrapper
+    '<div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">' +
+
+    // ── LEFT COLUMN
+    '<div>' +
+
+    // Contact card
+    '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="stitle" style="margin-bottom:4px;">Contact details</div>' +
+      '<div class="sdesc">Who should we get back to?</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Full name *</label>' +
+          '<input placeholder="John Smith" value="' + esc(wState.name) + '" oninput="wSet(\'name\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Company *</label>' +
+          '<input placeholder="Company B.V." value="' + esc(wState.company) + '" oninput="wSet(\'company\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Phone</label>' +
+          '<input placeholder="+31 6 12345678" value="' + esc(wState.phone) + '" oninput="wSet(\'phone\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Email *</label>' +
+          '<input type="email" placeholder="you@company.com" value="' + esc(wState.email) + '" oninput="wSet(\'email\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
+      '</div>' +
+    '</div>' +
+
+    // Manufacturer card
+    '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="stitle" style="margin-bottom:4px;">Transmitter</div>' +
+      '<div class="sdesc">Select your instrument manufacturer and model.</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Manufacturer</label>' +
+          '<select onchange="wMfg(this.value)" onfocus="wFocus(\'Manufacturer\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mfgOpts + '</select></div>' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Model</label>' +
+          '<select onchange="wSet(\'model\',this.value)" onfocus="wFocus(\'Model\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mdlOpts + '</select></div>' +
+      '</div>' +
+    '</div>' +
+
+    // Options card
+    '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="stitle" style="margin-bottom:4px;">Project requirements</div>' +
+      '<div class="sdesc">Click any field to see why it matters.</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + optHtml + '</div>' +
+    '</div>' +
+
+    // Remarks + submit
+    '<div class="card">' +
+      '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Remarks / questions</label>' +
+        '<textarea placeholder="Any specific requirements or questions..." oninput="wSet(\'remarks\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;min-height:80px;resize:vertical;">' + esc(wState.remarks) + '</textarea></div>' +
+      '<div class="nav">' +
+        '<button class="btn" onclick="selProduct(null)">&#8592; Back</button>' +
+        '<button class="btn pri" onclick="sendWinterization()" ' + (canSend && !wState.sending ? '' : 'disabled') + '>' + (wState.sending ? 'Sending…' : 'Send request') + '</button>' +
+      '</div>' +
+    '</div>' +
+
+    '</div>' + // end left column
+
+    // ── RIGHT COLUMN
+    '<div>' +
+
+    // Focus insight card
+    '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="sec-title">Field insight</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">' + esc(wState.focusedField) + '</div>' +
+      '<div style="font-size:13px;color:#666;line-height:1.6;">' + (W_HELP[wState.focusedField] || 'Click any field to see why it matters.') + '</div>' +
+    '</div>' +
+
+    // Scorecard
+    '<div class="card">' +
+      '<div class="sec-title">Configuration summary</div>' +
+      scoreRows.map(function(r) {
+        return '<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">' +
+          '<div style="font-size:11px;color:var(--muted);">' + r.label + '</div>' +
+          '<div style="font-size:13px;font-weight:700;margin-top:2px;">' + esc(r.val) + '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>' +
+
+    '</div>' + // end right column
+    '</div>'; // end grid
+}
+
+function renderWinterizationDone(ct) {
+  ct.innerHTML = '<div class="card"><div class="success-wrap">' +
+    '<div class="success-icon"></div>' +
+    '<h3>Request sent!</h3>' +
+    '<p>Your winterization request has been sent to Multi Instruments.<br>We will reach out to <strong>' + esc(wState.email) + '</strong> shortly.</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;justify-content:center;padding-bottom:1rem;">' +
+    '<button class="btn pri" onclick="resetWinterization()">New request</button>' +
+    '<button class="btn" onclick="selProduct(null)">Back to overview</button>' +
+    '</div></div>';
+}
+
+function wSet(key, val) { wState[key] = val; renderWinterization(document.getElementById('ct')); }
+function wMfg(val) {
+  wState.manufacturer = val;
+  var models = W_MANUFACTURERS[val] || [];
+  wState.model = models[0] || '';
+  renderWinterization(document.getElementById('ct'));
+}
+function wFocus(label) { wState.focusedField = label; renderWinterization(document.getElementById('ct')); }
+function sendWinterization() {
+  if (!wState.name || !wState.email || !wState.company || wState.sending) return;
+  wState.sending = true;
+  renderWinterization(document.getElementById('ct'));
+  setTimeout(function() { wState.sending = false; wState.submitted = true; renderWinterization(document.getElementById('ct')); }, 900);
+}
+function resetWinterization() {
+  wState = { name: '', company: '', phone: '', email: '', remarks: '',
+    ambient: '-45°C', heatingSource: 'Electric', voltage: '240VAC',
+    manifold: 'Three Valve', application: 'Standard DP', processTemp: '-40 to 200°C',
+    materials: 'AISI 316L (NACE)', instrument: 'IEC 61518', process: 'BSPP',
+    manufacturer: 'Rosemount', model: '3051SMV', focusedField: 'Application',
+    submitted: false, sending: false };
+  renderWinterization(document.getElementById('ct'));
 }
 
 // ── Step renderers ────────────────────────────────────────
