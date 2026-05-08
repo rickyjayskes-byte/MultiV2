@@ -687,10 +687,29 @@ function renderWinterization(ct) {
     // ── LEFT COLUMN
     '<div>' +
 
-    // Contact card
+    // 1. Manufacturer card
     '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="stitle" style="margin-bottom:4px;">Transmitter</div>' +
+      '<div class="sdesc">Select your instrument manufacturer and model.</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Manufacturer</label>' +
+          '<select onchange="wMfg(this.value)" onfocus="wFocus(\'Manufacturer\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mfgOpts + '</select></div>' +
+        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Model</label>' +
+          '<select onchange="wSet(\'model\',this.value)" onfocus="wFocus(\'Model\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mdlOpts + '</select></div>' +
+      '</div>' +
+    '</div>' +
+
+    // 2. Options card
+    '<div class="card" style="margin-bottom:16px;">' +
+      '<div class="stitle" style="margin-bottom:4px;">Project requirements</div>' +
+      '<div class="sdesc">Click any field to see why it matters.</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + optHtml + '</div>' +
+    '</div>' +
+
+    // 3. Contact + submit (at the end)
+    '<div class="card">' +
       '<div class="stitle" style="margin-bottom:4px;">Contact details</div>' +
-      '<div class="sdesc">Who should we get back to?</div>' +
+      '<div class="sdesc">Almost done — who should we get back to?</div>' +
       '<div class="form-row">' +
         '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Full name *</label>' +
           '<input placeholder="John Smith" value="' + esc(wState.name) + '" oninput="wSet(\'name\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
@@ -703,29 +722,6 @@ function renderWinterization(ct) {
         '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Email *</label>' +
           '<input type="email" placeholder="you@company.com" value="' + esc(wState.email) + '" oninput="wSet(\'email\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
       '</div>' +
-    '</div>' +
-
-    // Manufacturer card
-    '<div class="card" style="margin-bottom:16px;">' +
-      '<div class="stitle" style="margin-bottom:4px;">Transmitter</div>' +
-      '<div class="sdesc">Select your instrument manufacturer and model.</div>' +
-      '<div class="form-row">' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Manufacturer</label>' +
-          '<select onchange="wMfg(this.value)" onfocus="wFocus(\'Manufacturer\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mfgOpts + '</select></div>' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Model</label>' +
-          '<select onchange="wSet(\'model\',this.value)" onfocus="wFocus(\'Model\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mdlOpts + '</select></div>' +
-      '</div>' +
-    '</div>' +
-
-    // Options card
-    '<div class="card" style="margin-bottom:16px;">' +
-      '<div class="stitle" style="margin-bottom:4px;">Project requirements</div>' +
-      '<div class="sdesc">Click any field to see why it matters.</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + optHtml + '</div>' +
-    '</div>' +
-
-    // Remarks + submit
-    '<div class="card">' +
       '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Remarks / questions</label>' +
         '<textarea placeholder="Any specific requirements or questions..." oninput="wSet(\'remarks\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;min-height:80px;resize:vertical;">' + esc(wState.remarks) + '</textarea></div>' +
       '<div class="nav">' +
@@ -1073,6 +1069,8 @@ function reset() {
 }
 
 function configureAnother() {
+  // Go back to the landing page so the user can pick any product
+  productType = null;
   step = 0; valveType = null; model = null; mat = null; conn = null;
   iface = null; oper = null; qty = 1; outputConn = null;
   extras = new Set(); remarks = ''; submitted = false; sending = false; sendError = '';
