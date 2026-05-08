@@ -19,6 +19,7 @@ var wState = {
   instrument: 'IEC 61518', process: 'BSPP',
   manufacturer: 'Rosemount', model: '3051SMV',
   focusedField: 'Application', submitted: false, sending: false,
+  step: 0,
 };
 
 var W_OPTIONS = {
@@ -641,20 +642,9 @@ function renderComingSoon(ct) {
 // ── Winterization renderer ────────────────────────────────
 function renderWinterization(ct) {
   if (wState.submitted) { renderWinterizationDone(ct); return; }
+  if (wState.step === 1) { renderWinterizationReview(ct); return; }
 
   var models = W_MANUFACTURERS[wState.manufacturer] || [];
-
-  // Scorecard rows
-  var envFit = wState.ambient === '-60°C' ? 'Extreme service' : (wState.ambient === '-55°C' || wState.ambient === '-50°C') ? 'Low-temp service' : 'Standard cold-weather service';
-  var heatPath = wState.heatingSource === 'Electric' ? wState.heatingSource + ' · ' + wState.voltage : wState.heatingSource;
-  var scoreRows = [
-    { label: 'Environmental fit',  val: envFit },
-    { label: 'Heating path',       val: heatPath },
-    { label: 'Measurement style',  val: wState.application + ' · ' + wState.manifold },
-    { label: 'Instrument match',   val: wState.manufacturer + ' ' + wState.model },
-    { label: 'Process connection', val: wState.process + ' · ' + wState.instrument },
-    { label: 'Material',           val: wState.materials },
-  ];
 
   // Options selects
   var optHtml = Object.keys(W_OPTIONS).map(function(label) {
@@ -663,8 +653,8 @@ function renderWinterization(ct) {
       return '<option value="' + esc(o) + '"' + (wState[key] === o ? ' selected' : '') + '>' + esc(o) + '</option>';
     }).join('');
     return '<div class="form-group">' +
-      '<label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">' + label + '</label>' +
-      '<select onchange="wSet(\'' + key + '\',this.value)" onfocus="wFocus(\'' + label + '\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;color:#333;background:#fff;">' +
+      '<label>' + label + '</label>' +
+      '<select onchange="wSet(\'' + key + '\',this.value)" onfocus="wFocus(\'' + label + '\')">' +
       opts + '</select></div>';
   }).join('');
 
@@ -678,83 +668,104 @@ function renderWinterization(ct) {
     return '<option value="' + esc(m) + '"' + (wState.model === m ? ' selected' : '') + '>' + esc(m) + '</option>';
   }).join('');
 
-  var canSend = !!(wState.name && wState.email && wState.company);
-
   ct.innerHTML =
-    // ── Layout wrapper
-    '<div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">' +
+    '<div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">' +
 
-    // ── LEFT COLUMN
     '<div>' +
-
-    // 1. Manufacturer card
-    '<div class="card" style="margin-bottom:16px;">' +
-      '<div class="stitle" style="margin-bottom:4px;">Transmitter</div>' +
+    '<div class="card" style="margin-bottom:12px;">' +
+      '<div class="stitle">Transmitter</div>' +
       '<div class="sdesc">Select your instrument manufacturer and model.</div>' +
       '<div class="form-row">' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Manufacturer</label>' +
-          '<select onchange="wMfg(this.value)" onfocus="wFocus(\'Manufacturer\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mfgOpts + '</select></div>' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Model</label>' +
-          '<select onchange="wSet(\'model\',this.value)" onfocus="wFocus(\'Model\')" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;">' + mdlOpts + '</select></div>' +
+        '<div class="form-group"><label>Manufacturer</label>' +
+          '<select onchange="wMfg(this.value)" onfocus="wFocus(\'Manufacturer\')">' + mfgOpts + '</select></div>' +
+        '<div class="form-group"><label>Model</label>' +
+          '<select onchange="wSet(\'model\',this.value)" onfocus="wFocus(\'Model\')">' + mdlOpts + '</select></div>' +
       '</div>' +
     '</div>' +
-
-    // 2. Options card
-    '<div class="card" style="margin-bottom:16px;">' +
-      '<div class="stitle" style="margin-bottom:4px;">Project requirements</div>' +
-      '<div class="sdesc">Click any field to see why it matters.</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + optHtml + '</div>' +
-    '</div>' +
-
-    // 3. Contact + submit (at the end)
     '<div class="card">' +
-      '<div class="stitle" style="margin-bottom:4px;">Contact details</div>' +
-      '<div class="sdesc">Almost done — who should we get back to?</div>' +
-      '<div class="form-row">' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Full name *</label>' +
-          '<input placeholder="John Smith" value="' + esc(wState.name) + '" oninput="wSet(\'name\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Company *</label>' +
-          '<input placeholder="Company B.V." value="' + esc(wState.company) + '" oninput="wSet(\'company\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
-      '</div>' +
-      '<div class="form-row">' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Phone</label>' +
-          '<input placeholder="+31 6 12345678" value="' + esc(wState.phone) + '" oninput="wSet(\'phone\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
-        '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Email *</label>' +
-          '<input type="email" placeholder="you@company.com" value="' + esc(wState.email) + '" oninput="wSet(\'email\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;"></div>' +
-      '</div>' +
-      '<div class="form-group"><label style="font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px;">Remarks / questions</label>' +
-        '<textarea placeholder="Any specific requirements or questions..." oninput="wSet(\'remarks\',this.value)" style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;min-height:80px;resize:vertical;">' + esc(wState.remarks) + '</textarea></div>' +
-      '<div class="nav">' +
+      '<div class="stitle">Project requirements</div>' +
+      '<div class="sdesc">Click any field to see why it matters.</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">' + optHtml + '</div>' +
+      '<div class="nav" style="margin-top:1rem;">' +
         '<button class="btn" onclick="selProduct(null)">&#8592; Back</button>' +
-        '<button class="btn pri" onclick="sendWinterization()" ' + (canSend && !wState.sending ? '' : 'disabled') + '>' + (wState.sending ? 'Sending…' : 'Send request') + '</button>' +
+        '<button class="btn pri" onclick="wNextStep()">Next &#8594;</button>' +
       '</div>' +
     '</div>' +
+    '</div>' +
 
-    '</div>' + // end left column
-
-    // ── RIGHT COLUMN
     '<div>' +
-
-    // Focus insight card
-    '<div class="card" style="margin-bottom:16px;">' +
+    '<div class="card" style="margin-bottom:12px;">' +
       '<div class="sec-title">Field insight</div>' +
       '<div id="w-focus-title" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">' + esc(wState.focusedField) + '</div>' +
-      '<div id="w-focus-text" style="font-size:13px;color:#666;line-height:1.6;">' + (W_HELP[wState.focusedField] || 'Click any field to see why it matters.') + '</div>' +
+      '<div id="w-focus-text" style="font-size:13px;color:var(--muted);line-height:1.65;">' + (W_HELP[wState.focusedField] || 'Click any field to see why it matters.') + '</div>' +
     '</div>' +
-
-    // Scorecard
     '<div class="card">' +
-      '<div class="sec-title">Configuration summary</div>' +
-      scoreRows.map(function(r) {
-        return '<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;">' +
-          '<div style="font-size:11px;color:var(--muted);">' + r.label + '</div>' +
-          '<div style="font-size:13px;font-weight:700;margin-top:2px;">' + esc(r.val) + '</div>' +
-        '</div>';
-      }).join('') +
+      '<div class="sec-title">Summary so far</div>' +
+      wSummaryRows() +
+    '</div>' +
     '</div>' +
 
-    '</div>' + // end right column
-    '</div>'; // end grid
+    '</div>';
+}
+
+function wSummaryRows() {
+  var envFit = wState.ambient === '-60°C' ? 'Extreme service' : (wState.ambient === '-55°C' || wState.ambient === '-50°C') ? 'Low-temp service' : 'Standard cold-weather';
+  var heatPath = wState.heatingSource === 'Electric' ? wState.heatingSource + ' · ' + wState.voltage : wState.heatingSource;
+  var rows = [
+    { label: 'Environmental fit',  val: envFit },
+    { label: 'Heating path',       val: heatPath },
+    { label: 'Measurement style',  val: wState.application + ' · ' + wState.manifold },
+    { label: 'Instrument',         val: wState.manufacturer + ' ' + wState.model },
+    { label: 'Process connection', val: wState.process + ' · ' + wState.instrument },
+    { label: 'Material',           val: wState.materials },
+  ];
+  return rows.map(function(r) {
+    return '<div style="padding:7px 0;border-bottom:1px solid var(--border);">' +
+      '<div style="font-size:11px;color:var(--muted);">' + r.label + '</div>' +
+      '<div style="font-size:13px;font-weight:600;margin-top:2px;">' + esc(r.val) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderWinterizationReview(ct) {
+  var canSend = !!(wState.name && wState.email && wState.company);
+  ct.innerHTML =
+    '<div class="result-card">' +
+      '<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;">Winterization configuration</div>' +
+      '<div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:1rem;">' + esc(wState.manufacturer) + ' ' + esc(wState.model) + '</div>' +
+      '<table class="st">' +
+        '<tr><td>Ambient temperature</td><td style="font-weight:600">' + esc(wState.ambient) + '</td></tr>' +
+        '<tr><td>Heating source</td><td style="font-weight:600">' + esc(wState.heatingSource) + (wState.heatingSource === 'Electric' ? ' · ' + esc(wState.voltage) : '') + '</td></tr>' +
+        '<tr><td>Manifold</td><td style="font-weight:600">' + esc(wState.manifold) + '</td></tr>' +
+        '<tr><td>Application</td><td style="font-weight:600">' + esc(wState.application) + '</td></tr>' +
+        '<tr><td>Process temperature</td><td style="font-weight:600">' + esc(wState.processTemp) + '</td></tr>' +
+        '<tr><td>Materials</td><td style="font-weight:600">' + esc(wState.materials) + '</td></tr>' +
+        '<tr><td>Instrument interface</td><td style="font-weight:600">' + esc(wState.instrument) + '</td></tr>' +
+        '<tr><td>Process connection</td><td style="font-weight:600">' + esc(wState.process) + '</td></tr>' +
+      '</table>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="sec-title">Contact details</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Full name *</label>' +
+          '<input placeholder="John Smith" value="' + esc(wState.name) + '" oninput="wSet(\'name\',this.value)"></div>' +
+        '<div class="form-group"><label>Company *</label>' +
+          '<input placeholder="Company B.V." value="' + esc(wState.company) + '" oninput="wSet(\'company\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row">' +
+        '<div class="form-group"><label>Phone</label>' +
+          '<input placeholder="+31 6 12345678" value="' + esc(wState.phone) + '" oninput="wSet(\'phone\',this.value)"></div>' +
+        '<div class="form-group"><label>Email *</label>' +
+          '<input type="email" placeholder="you@company.com" value="' + esc(wState.email) + '" oninput="wSet(\'email\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-group"><label>Remarks / questions</label>' +
+        '<textarea placeholder="Any specific requirements or questions..." oninput="wSet(\'remarks\',this.value)">' + esc(wState.remarks) + '</textarea></div>' +
+      '<div class="nav">' +
+        '<button class="btn" onclick="wPrevStep()">&#8592; Back</button>' +
+        '<button class="btn pri" onclick="sendWinterization()" ' + (canSend && !wState.sending ? '' : 'disabled') + '>' + (wState.sending ? 'Sending…' : 'Send request') + '</button>' +
+        '<button class="btn" onclick="selProduct(null)">Configure another</button>' +
+      '</div>' +
+    '</div>';
 }
 
 function renderWinterizationDone(ct) {
@@ -763,13 +774,17 @@ function renderWinterizationDone(ct) {
     '<h3>Request sent!</h3>' +
     '<p>Your winterization request has been sent to Multi Instruments.<br>We will reach out to <strong>' + esc(wState.email) + '</strong> shortly.</p>' +
     '</div>' +
-    '<div style="display:flex;gap:10px;justify-content:center;padding-bottom:1rem;">' +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-bottom:1rem;">' +
     '<button class="btn pri" onclick="resetWinterization()">New request</button>' +
-    '<button class="btn" onclick="selProduct(null)">Back to overview</button>' +
+    '<button class="btn" onclick="selProduct(null)">Configure another</button>' +
     '</div></div>';
 }
 
-function wSet(key, val) { wState[key] = val; renderWinterization(document.getElementById('ct')); }
+function wSet(key, val) {
+  wState[key] = val;
+  if (wState.step === 0) { renderWinterization(document.getElementById('ct')); }
+  else { renderWinterizationReview(document.getElementById('ct')); }
+}
 function wMfg(val) {
   wState.manufacturer = val;
   var models = W_MANUFACTURERS[val] || [];
@@ -778,13 +793,13 @@ function wMfg(val) {
 }
 function wFocus(label) {
   wState.focusedField = label;
-  // Only update the insight panel — do NOT re-render the whole page
-  // (a full re-render would destroy the open dropdown)
   var titleEl = document.getElementById('w-focus-title');
   var textEl  = document.getElementById('w-focus-text');
   if (titleEl) titleEl.textContent = label;
   if (textEl)  textEl.textContent  = W_HELP[label] || 'Click any field to see why it matters.';
 }
+function wNextStep() { wState.step = 1; renderWinterization(document.getElementById('ct')); }
+function wPrevStep() { wState.step = 0; renderWinterization(document.getElementById('ct')); }
 function sendWinterization() {
   if (!wState.name || !wState.email || !wState.company || wState.sending) return;
   wState.sending = true;
@@ -797,7 +812,7 @@ function resetWinterization() {
     manifold: 'Three Valve', application: 'Standard DP', processTemp: '-40 to 200°C',
     materials: 'AISI 316L (NACE)', instrument: 'IEC 61518', process: 'BSPP',
     manufacturer: 'Rosemount', model: '3051SMV', focusedField: 'Application',
-    submitted: false, sending: false };
+    submitted: false, sending: false, step: 0 };
   renderWinterization(document.getElementById('ct'));
 }
 
@@ -1121,4 +1136,7 @@ function goNext() {
   var steps = getSteps(), s = steps[step];
   if (canNext() || s.id === 'extras' || s.id === 'outputConn') { step++; render(); }
 }
-function goBack() { if (step > 0) { step--; render(); } }
+function goBack() {
+  if (step > 0) { step--; render(); }
+  else { productType = null; render(); }
+}
