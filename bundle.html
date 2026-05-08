@@ -1409,8 +1409,8 @@ function renderWinterization(ct) {
     // Focus insight card
     '<div class="card" style="margin-bottom:16px;">' +
       '<div class="sec-title">Field insight</div>' +
-      '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">' + esc(wState.focusedField) + '</div>' +
-      '<div style="font-size:13px;color:#666;line-height:1.6;">' + (W_HELP[wState.focusedField] || 'Click any field to see why it matters.') + '</div>' +
+      '<div id="w-focus-title" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">' + esc(wState.focusedField) + '</div>' +
+      '<div id="w-focus-text" style="font-size:13px;color:#666;line-height:1.6;">' + (W_HELP[wState.focusedField] || 'Click any field to see why it matters.') + '</div>' +
     '</div>' +
 
     // Scorecard
@@ -1447,7 +1447,15 @@ function wMfg(val) {
   wState.model = models[0] || '';
   renderWinterization(document.getElementById('ct'));
 }
-function wFocus(label) { wState.focusedField = label; renderWinterization(document.getElementById('ct')); }
+function wFocus(label) {
+  wState.focusedField = label;
+  // Only update the insight panel — do NOT re-render the whole page
+  // (a full re-render would destroy the open dropdown)
+  var titleEl = document.getElementById('w-focus-title');
+  var textEl  = document.getElementById('w-focus-text');
+  if (titleEl) titleEl.textContent = label;
+  if (textEl)  textEl.textContent  = W_HELP[label] || 'Click any field to see why it matters.';
+}
 function sendWinterization() {
   if (!wState.name || !wState.email || !wState.company || wState.sending) return;
   wState.sending = true;
