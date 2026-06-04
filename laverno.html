@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laverno — Keukens voor het leven</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Tokens ──────────────────────────────────────────── */
+    :root {
+      --bg:          #FAF8F5;
+      --surface:     #FFFFFF;
+      --surface-2:   #F2EFE9;
+      --border:      #E5E0D8;
+      --text-1:      #1A1918;
+      --text-2:      #6B6560;
+      --text-3:      #9E9890;
+      --accent:      #B07D54;
+      --accent-dark: #8C5E38;
+      --accent-light:#F0E6DA;
+      --serif:       'Cormorant Garamond', Georgia, serif;
+      --sans:        'Inter', system-ui, sans-serif;
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+      --shadow-sm:   0 1px 4px rgba(26,25,24,.06);
+      --shadow-md:   0 4px 24px rgba(26,25,24,.08);
+      --shadow-lg:   0 12px 48px rgba(26,25,24,.10);
+      --max-w:       1200px;
+      --transition:  180ms ease-out;
+    }
+
+    /* ── Reset ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-1);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ── Utility ─────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: clamp(20px, 5vw, 80px);
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(250,248,245,.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--transition), padding var(--transition);
+    }
+    .nav.scrolled {
+      border-bottom-color: var(--border);
+      padding: 14px 0;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--text-1);
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--text-1); }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--surface);
+      background: var(--text-1);
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), transform var(--transition);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .nav-menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-menu-btn span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text-1);
+      transition: transform var(--transition), opacity var(--transition);
+    }
+
+    /* ── Hero ────────────────────────────────────────────── */
+    .hero {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+      overflow: hidden;
+    }
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 80px);
+      padding-right: 48px;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(44px, 6vw, 80px);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -.01em;
+      color: var(--text-1);
+      margin-bottom: 28px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text-2);
+      max-width: 440px;
+      margin-bottom: 48px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 32px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--surface);
+      background: var(--text-1);
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 28px;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: .04em;
+      color: var(--text-1);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-1);
+      background: var(--surface-2);
+      transform: translateY(-2px);
+    }
+    .hero-trust {
+      display: flex;
+      gap: 32px;
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .hero-stat-val {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+    .hero-stat-lbl {
+      font-size: 12px;
+      color: var(--text-3);
+      letter-spacing: .04em;
+      margin-top: 2px;
+    }
+    .hero-visual {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+    .hero-img-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Decorative kitchen illustration */
+    .hero-illustration {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-badge {
+      position: absolute;
+      bottom: 40px;
+      left: -16px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 220px;
+    }
+    .hero-badge-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+    .hero-badge-text {
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-2);
+    }
+    .hero-badge-text strong {
+      display: block;
+      font-size: 14px;
+      color: var(--text-1);
+      margin-bottom: 2px;
+    }
+
+    /* ── Section shared ──────────────────────────────────── */
+    section { padding: clamp(64px, 10vh, 120px) 0; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: -.01em;
+      color: var(--text-1);
+      margin-bottom: 20px;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .section-sub {
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text-2);
+      max-width: 520px;
+    }
+
+    /* ── Brand story ─────────────────────────────────────── */
+    .story { background: var(--surface); }
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .story-visual {
+      position: relative;
+    }
+    .story-img-wrap {
+      aspect-ratio: 4/5;
+      background: var(--surface-2);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+    }
+    .story-img-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .story-float-card {
+      position: absolute;
+      bottom: -24px;
+      right: -24px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-lg);
+      min-width: 180px;
+    }
+    .story-float-card .val {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text-1);
+      line-height: 1;
+    }
+    .story-float-card .lbl {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 4px;
+      letter-spacing: .04em;
+    }
+    .story-content { padding: 16px 0; }
+    .story-quote {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--text-1);
+      border-left: 2px solid var(--accent);
+      padding-left: 24px;
+      margin: 36px 0;
+    }
+    .story-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: .04em;
+      transition: gap var(--transition);
+    }
+    .story-link:hover { gap: 14px; }
+    .story-link svg { transition: transform var(--transition); }
+    .story-link:hover svg { transform: translateX(4px); }
+
+    /* ── Features ────────────────────────────────────────── */
+    .features { background: var(--bg); }
+    .features-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: end;
+      margin-bottom: 64px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .feature-card {
+      background: var(--surface);
+      padding: 40px 36px;
+      transition: background var(--transition);
+    }
+    .feature-card:hover { background: var(--accent-light); }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .feature-title {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-1);
+      margin-bottom: 12px;
+    }
+    .feature-desc {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text-2);
+    }
+
+    /* ── Products ────────────────────────────────────────── */
+    .products { background: var(--surface); }
+    .products-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+    }
+    .products-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 400;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--text-1);
+      border-color: var(--text-1);
+      color: var(--surface);
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .product-card {
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--surface-2);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .product-img {
+      aspect-ratio: 4/3;
+      background: var(--surface-2);
+      position: relative;
+      overflow: hidden;
+    }
+    .product-img-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-tag {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--surface);
+      border-radius: 100px;
+      color: var(--accent);
+    }
+    .product-info {
+      padding: 24px;
+    }
+    .product-name {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-1);
+      margin-bottom: 6px;
+    }
+    .product-desc {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 20px;
+    }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .product-price {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+    .product-price span {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-3);
+    }
+    .product-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--text-1);
+      color: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), transform var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+    .product-btn:hover { background: var(--accent); transform: scale(1.1); }
+
+    /* ── Testimonials ────────────────────────────────────── */
+    .testimonials { background: var(--text-1); color: var(--bg); }
+    .testimonials .section-label { color: var(--accent); }
+    .testimonials .section-title { color: var(--bg); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 56px;
+      background: rgba(255,255,255,.06);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .testimonial-card {
+      background: rgba(255,255,255,.04);
+      padding: 40px 36px;
+    }
+    .stars {
+      display: flex;
+      gap: 4px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .testimonial-text {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-style: italic;
+      line-height: 1.6;
+      color: rgba(250,248,245,.85);
+      margin-bottom: 28px;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .author-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .author-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--bg);
+    }
+    .author-loc {
+      font-size: 12px;
+      color: rgba(250,248,245,.5);
+      margin-top: 2px;
+    }
+
+    /* ── CTA Banner ──────────────────────────────────────── */
+    .cta-banner {
+      background: var(--accent-light);
+      padding: clamp(64px, 10vh, 100px) 0;
+    }
+    .cta-banner-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: center;
+    }
+    .cta-banner .section-title { max-width: 560px; }
+    .cta-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cta-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-family: var(--sans);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-1);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .cta-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(176,125,84,.15);
+    }
+    .cta-input::placeholder { color: var(--text-3); }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    .footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: clamp(48px, 6vh, 72px) 0 32px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+    .footer-brand .nav-logo { display: block; margin-bottom: 16px; }
+    .footer-brand p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-2);
+      max-width: 280px;
+      margin-bottom: 24px;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-2);
+      transition: all var(--transition);
+    }
+    .social-btn:hover {
+      background: var(--text-1);
+      border-color: var(--text-1);
+      color: var(--surface);
+    }
+    .footer-col h4 {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-1);
+      margin-bottom: 20px;
+    }
+    .footer-col ul { display: flex; flex-direction: column; gap: 12px; }
+    .footer-col ul a {
+      font-size: 14px;
+      color: var(--text-2);
+      transition: color var(--transition);
+    }
+    .footer-col ul a:hover { color: var(--text-1); }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .footer-bottom p {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-bottom-links a {
+      font-size: 13px;
+      color: var(--text-3);
+      transition: color var(--transition);
+    }
+    .footer-bottom-links a:hover { color: var(--text-1); }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .products-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .nav-menu-btn { display: flex; }
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-visual { min-height: 340px; }
+      .hero-trust { gap: 20px; flex-wrap: wrap; }
+      .story-grid { grid-template-columns: 1fr; gap: 48px; }
+      .story-float-card { right: 0; bottom: -16px; }
+      .features-header { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .products-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .cta-banner-inner { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── Animations ──────────────────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 400ms ease-out, transform 400ms ease-out;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .fade-in:nth-child(2) { transition-delay: 60ms; }
+      .fade-in:nth-child(3) { transition-delay: 120ms; }
+      .fade-in:nth-child(4) { transition-delay: 180ms; }
+    }
+
+    /* ── SVG Illustrations ───────────────────────────────── */
+    .kitchen-svg { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- Skip link -->
+  <a href="#main" class="sr-only" style="position:fixed;top:8px;left:8px;z-index:9999;padding:12px 20px;background:var(--text-1);color:var(--surface);border-radius:var(--radius-sm);font-size:14px;">
+    Ga naar hoofdinhoud
+  </a>
+
+  <!-- ── Nav ─────────────────────────────────────────────── -->
+  <nav class="nav" id="nav" aria-label="Hoofdnavigatie">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo" aria-label="Laverno — naar startpagina">Laverno</a>
+        <ul class="nav-links" role="list">
+          <li><a href="#verhaal">Ons verhaal</a></li>
+          <li><a href="#collectie">Collectie</a></li>
+          <li><a href="#maatwerk">Maatwerk</a></li>
+          <li><a href="#showroom">Showroom</a></li>
+        </ul>
+        <a href="#afspraak" class="nav-cta">Maak een afspraak</a>
+        <button class="nav-menu-btn" aria-label="Menu openen" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- ── Hero ───────────────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-content">
+        <div class="hero-eyebrow" aria-hidden="true">Handcrafted in Nederland</div>
+        <h1 id="hero-heading">
+          Keukens die<br><em>generaties</em><br>meegaan
+        </h1>
+        <p class="hero-sub">
+          Laverno ontwerpt en bouwt keukens met karakter. Ambachtelijk vakmanschap, tijdloze materialen en een persoonlijk proces — van eerste schets tot laatste detail.
+        </p>
+        <div class="hero-actions">
+          <a href="#collectie" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Bekijk de collectie
+          </a>
+          <a href="#verhaal" class="btn-secondary">
+            Ons verhaal
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-trust" aria-label="Statistieken">
+          <div>
+            <div class="hero-stat-val">24+</div>
+            <div class="hero-stat-lbl">Jaar vakmanschap</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">1.400</div>
+            <div class="hero-stat-lbl">Geplaatste keukens</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">98%</div>
+            <div class="hero-stat-lbl">Klanttevredenheid</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <!-- Kitchen hero illustration -->
+        <svg class="kitchen-svg" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="600" height="700" fill="#F2EFE9"/>
+          <!-- Wall -->
+          <rect x="0" y="0" width="600" height="420" fill="#EAE6DF"/>
+          <!-- Upper cabinet left -->
+          <rect x="60" y="80" width="160" height="120" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="72" y="92" width="136" height="96" rx="2" fill="#DDD8CF"/>
+          <circle cx="140" cy="140" r="5" fill="#B8B2A8"/>
+          <!-- Upper cabinet center -->
+          <rect x="232" y="80" width="136" height="120" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="244" y="92" width="112" height="96" rx="2" fill="#DDD8CF"/>
+          <circle cx="300" cy="140" r="5" fill="#B8B2A8"/>
+          <!-- Upper cabinet right -->
+          <rect x="380" y="80" width="160" height="120" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="392" y="92" width="136" height="96" rx="2" fill="#DDD8CF"/>
+          <circle cx="460" cy="140" r="5" fill="#B8B2A8"/>
+          <!-- Countertop -->
+          <rect x="40" y="280" width="520" height="18" rx="3" fill="#C8C2B8"/>
+          <!-- Lower cabinets -->
+          <rect x="40" y="298" width="240" height="200" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="52" y="310" width="100" height="176" rx="2" fill="#DDD8CF"/>
+          <circle cx="102" cy="400" r="5" fill="#B8B2A8"/>
+          <rect x="164" y="310" width="104" height="176" rx="2" fill="#DDD8CF"/>
+          <circle cx="216" cy="400" r="5" fill="#B8B2A8"/>
+          <!-- Drawer block -->
+          <rect x="292" y="298" width="116" height="200" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="304" y="310" width="92" height="52" rx="2" fill="#DDD8CF"/>
+          <rect x="340" y="332" width="20" height="3" rx="1.5" fill="#B8B2A8"/>
+          <rect x="304" y="374" width="92" height="52" rx="2" fill="#DDD8CF"/>
+          <rect x="340" y="396" width="20" height="3" rx="1.5" fill="#B8B2A8"/>
+          <rect x="304" y="438" width="92" height="48" rx="2" fill="#DDD8CF"/>
+          <rect x="340" y="458" width="20" height="3" rx="1.5" fill="#B8B2A8"/>
+          <!-- Right cabinet -->
+          <rect x="420" y="298" width="140" height="200" rx="4" fill="#D4CFC7" stroke="#C8C2B8" stroke-width="1"/>
+          <rect x="432" y="310" width="116" height="176" rx="2" fill="#DDD8CF"/>
+          <circle cx="490" cy="400" r="5" fill="#B8B2A8"/>
+          <!-- Sink -->
+          <rect x="284" y="240" width="132" height="40" rx="3" fill="#C0BBB2"/>
+          <rect x="294" y="248" width="112" height="24" rx="2" fill="#B8B2A8"/>
+          <!-- Faucet -->
+          <rect x="348" y="218" width="4" height="28" rx="2" fill="#A8A39A"/>
+          <path d="M350 220 Q370 215 372 232" stroke="#A8A39A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- Induction hob -->
+          <rect x="80" y="252" width="168" height="28" rx="3" fill="#2A2826"/>
+          <circle cx="120" cy="266" r="12" fill="none" stroke="#444" stroke-width="1.5"/>
+          <circle cx="160" cy="266" r="10" fill="none" stroke="#444" stroke-width="1.5"/>
+          <circle cx="200" cy="266" r="11" fill="none" stroke="#444" stroke-width="1.5"/>
+          <circle cx="232" cy="266" r="8" fill="none" stroke="#444" stroke-width="1.5"/>
+          <!-- Window / light source -->
+          <rect x="130" y="20" width="200" height="52" rx="3" fill="#F8F4EE" stroke="#D4CFC7" stroke-width="1"/>
+          <line x1="230" y1="20" x2="230" y2="72" stroke="#D4CFC7" stroke-width="1"/>
+          <!-- Floor -->
+          <rect x="0" y="498" width="600" height="202" fill="#E8E3DC"/>
+          <line x1="0" y1="540" x2="600" y2="540" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="0" y1="582" x2="600" y2="582" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="0" y1="624" x2="600" y2="624" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="0" y1="666" x2="600" y2="666" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="100" y1="498" x2="100" y2="700" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="200" y1="498" x2="200" y2="700" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="300" y1="498" x2="300" y2="700" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="400" y1="498" x2="400" y2="700" stroke="#DDD8CF" stroke-width="1"/>
+          <line x1="500" y1="498" x2="500" y2="700" stroke="#DDD8CF" stroke-width="1"/>
+          <!-- Accent warm light overlay -->
+          <ellipse cx="300" cy="200" rx="280" ry="160" fill="rgba(176,125,84,.04)"/>
+        </svg>
+
+        <div class="hero-badge" role="note" aria-label="Certificering">
+          <div class="hero-badge-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2l2.1 4.3 4.7.7-3.4 3.3.8 4.7L10 12.5l-4.2 2.5.8-4.7L3.2 7l4.7-.7L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="hero-badge-text">
+            <strong>Beste keuken 2024</strong>
+            Woonbeurs Amsterdam
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Brand Story ─────────────────────────────────────── -->
+    <section class="story" id="verhaal" aria-labelledby="story-heading">
+      <div class="container">
+        <div class="story-grid">
+          <div class="story-visual">
+            <div class="story-img-wrap">
+              <div class="story-img-inner" aria-hidden="true">
+                <!-- Artisan craftsman illustration -->
+                <svg width="280" height="340" viewBox="0 0 280 340" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="280" height="340" fill="#EAE6DF"/>
+                  <!-- Workbench -->
+                  <rect x="20" y="220" width="240" height="14" rx="3" fill="#C8C2B8"/>
+                  <rect x="30" y="234" width="20" height="80" rx="2" fill="#C8C2B8"/>
+                  <rect x="230" y="234" width="20" height="80" rx="2" fill="#C8C2B8"/>
+                  <!-- Cabinet door on bench -->
+                  <rect x="60" y="150" width="160" height="70" rx="4" fill="#D4CFC7" stroke="#C0BBB2" stroke-width="1.5"/>
+                  <rect x="76" y="163" width="60" height="44" rx="2" fill="#DDD8CF"/>
+                  <rect x="144" y="163" width="60" height="44" rx="2" fill="#DDD8CF"/>
+                  <!-- Tool -->
+                  <rect x="198" y="100" width="6" height="56" rx="3" fill="#A89880" transform="rotate(-20, 200, 130)"/>
+                  <rect x="188" y="96" width="26" height="10" rx="2" fill="#8A7A6A" transform="rotate(-20, 200, 100)"/>
+                  <!-- Wood grain lines -->
+                  <line x1="76" y1="170" x2="130" y2="170" stroke="#C8C2B8" stroke-width=".5" stroke-dasharray="4,3"/>
+                  <line x1="76" y1="178" x2="130" y2="178" stroke="#C8C2B8" stroke-width=".5" stroke-dasharray="4,3"/>
+                  <line x1="76" y1="186" x2="130" y2="186" stroke="#C8C2B8" stroke-width=".5" stroke-dasharray="4,3"/>
+                  <line x1="144" y1="170" x2="198" y2="170" stroke="#C8C2B8" stroke-width=".5" stroke-dasharray="4,3"/>
+                  <line x1="144" y1="178" x2="198" y2="178" stroke="#C8C2B8" stroke-width=".5" stroke-dasharray="4,3"/>
+                  <!-- Warm light -->
+                  <ellipse cx="140" cy="120" rx="90" ry="60" fill="rgba(176,125,84,.08)"/>
+                  <!-- Label -->
+                  <text x="140" y="310" text-anchor="middle" font-family="'Cormorant Garamond',Georgia,serif" font-size="13" fill="#9E9890" font-style="italic">Handgemaakt in Haarlem</text>
+                </svg>
+              </div>
+            </div>
+            <div class="story-float-card" role="note">
+              <div class="val">1999</div>
+              <div class="lbl">Opgericht in Haarlem</div>
+            </div>
+          </div>
+
+          <div class="story-content fade-in">
+            <div class="section-label">Ons verhaal</div>
+            <h2 class="section-title" id="story-heading">
+              Ambacht is geen<br><em>belofte</em>, het is ons werk
+            </h2>
+            <p class="section-sub">
+              Laverno begon in 1999 in een kleine werkplaats in Haarlem. Oprichter Luca Averno had één overtuiging: een keuken is geen meubel, maar de hartslag van een huis. Elke keuken die wij bouwen draagt die filosofie in zich.
+            </p>
+            <blockquote class="story-quote">
+              "Een goede keuken verdient geen trend. Hij verdient tijd, aandacht en de juiste handen."
+            </blockquote>
+            <p class="section-sub">
+              Vandaag werken wij met 38 ambachtslieden, selecteren wij onze materialen persoonlijk en begeleidden wij elk project van ontwerp tot installatie.
+            </p>
+            <a href="#verhaal" class="story-link" style="margin-top:32px;display:inline-flex;">
+              Meer over ons
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Features ───────────────────────────────────────── -->
+    <section class="features" id="maatwerk" aria-labelledby="features-heading">
+      <div class="container">
+        <div class="features-header">
+          <div>
+            <div class="section-label">Waarom Laverno</div>
+            <h2 class="section-title" id="features-heading">
+              Elk detail<br><em>telt</em>
+            </h2>
+          </div>
+          <p class="section-sub" style="align-self:start;padding-top:16px;">
+            Van de houtsoort van de frontjes tot de zachte sluitdempnig van elke lade — bij Laverno is elk onderdeel een bewuste keuze.
+          </p>
+        </div>
+
+        <div class="features-grid" role="list">
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M22 4L4 14v16l18 10 18-10V14L22 4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M22 4v26M4 14l18 10 18-10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="feature-title">Maatwerk design</h3>
+            <p class="feature-desc">Geen twee Laverno-keukens zijn hetzelfde. Wij ontwerpen volledig op maat, passend bij uw ruimte, smaak en leefstijl.</p>
+          </article>
+
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="22" cy="22" r="16" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 22l6 6 10-12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h3 class="feature-title">25 jaar garantie</h3>
+            <p class="feature-desc">Wij staan achter ons werk. Laverno-keukens worden gebouwd met materialen en technieken die decennia meegaan.</p>
+          </article>
+
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8 36V20l14-12 14 12v16H8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <rect x="16" y="26" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <h3 class="feature-title">Duurzame materialen</h3>
+            <p class="feature-desc">Wij werken uitsluitend met FSC-gecertificeerd hout, gerecyclede metalen en natuursteen van traceerbare herkomst.</p>
+          </article>
+
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M22 6c-8.8 0-16 7.2-16 16 0 5 2.3 9.5 6 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M22 6c8.8 0 16 7.2 16 16 0 5-2.3 9.5-6 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="22" cy="22" r="4" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <h3 class="feature-title">Persoonlijk proces</h3>
+            <p class="feature-desc">Eén vaste contactpersoon van intake tot oplevering. U weet altijd wie er voor u werkt en wat de volgende stap is.</p>
+          </article>
+
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="6" y="10" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 10V8M30 10V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M6 18h32" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 26h4M22 26h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <h3 class="feature-title">Strakke planning</h3>
+            <p class="feature-desc">Wij leveren op de afgesproken datum. Onze productieplanning is zo ingericht dat uitloop de uitzondering is, niet de regel.</p>
+          </article>
+
+          <article class="feature-card fade-in" role="listitem">
+            <svg class="feature-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M22 38c9.4-5 16-12.6 16-20a16 16 0 0 0-32 0c0 7.4 6.6 15 16 20z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <circle cx="22" cy="18" r="4" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <h3 class="feature-title">Showroom in Haarlem</h3>
+            <p class="feature-desc">Bezoek onze showroom en ervaar het materiaalgevoel, de kleuren en de afwerkingskwaliteit van Laverno in het echt.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Products ───────────────────────────────────────── -->
+    <section class="products" id="collectie" aria-labelledby="products-heading">
+      <div class="container">
+        <div class="products-header">
+          <div>
+            <div class="section-label">Collectie 2025</div>
+            <h2 class="section-title" id="products-heading">
+              Onze <em>meest gevraagde</em><br>ontwerpen
+            </h2>
+          </div>
+          <div class="products-filter" role="group" aria-label="Filter collectie">
+            <button class="filter-btn active" aria-pressed="true">Alles</button>
+            <button class="filter-btn" aria-pressed="false">Modern</button>
+            <button class="filter-btn" aria-pressed="false">Klassiek</button>
+            <button class="filter-btn" aria-pressed="false">Landelijk</button>
+          </div>
+        </div>
+
+        <div class="products-grid">
+          <!-- Card 1 -->
+          <article class="product-card fade-in">
+            <div class="product-img">
+              <div class="product-img-inner" aria-hidden="true">
+                <svg width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="240" height="180" fill="#E8E3DC"/>
+                  <rect x="20" y="30" width="200" height="8" rx="2" fill="#C8C2B8"/>
+                  <rect x="20" y="38" width="90" height="100" rx="3" fill="#D4CFC7" stroke="#C0BBB2" stroke-width="1"/>
+                  <rect x="32" y="50" width="66" height="76" rx="2" fill="#DDD8CF"/>
+                  <circle cx="65" cy="88" r="4" fill="#B8B2A8"/>
+                  <rect x="122" y="38" width="98" height="100" rx="3" fill="#D4CFC7" stroke="#C0BBB2" stroke-width="1"/>
+                  <rect x="134" y="50" width="36" height="76" rx="2" fill="#DDD8CF"/>
+                  <circle cx="152" cy="88" r="4" fill="#B8B2A8"/>
+                  <rect x="174" y="50" width="34" height="34" rx="2" fill="#DDD8CF"/>
+                  <rect x="174" y="88" width="34" height="36" rx="2" fill="#DDD8CF"/>
+                  <rect x="55" y="138" width="130" height="4" rx="1" fill="#B8B2A8"/>
+                  <text x="120" y="165" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#9E9890" font-style="italic">Serie Alba</text>
+                </svg>
+              </div>
+              <span class="product-tag">Bestseller</span>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Alba — Licht eiken</h3>
+              <p class="product-desc">Strak modern ontwerp met geborsteld eiken frontjes en een waterval aanrechtblad in Calacatta marmer.</p>
+              <div class="product-footer">
+                <div class="product-price">
+                  v.a. €14.900 <span>ex. btw</span>
+                </div>
+                <button class="product-btn" aria-label="Meer info over Alba">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="product-card fade-in">
+            <div class="product-img">
+              <div class="product-img-inner" aria-hidden="true">
+                <svg width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="240" height="180" fill="#2A2826"/>
+                  <rect x="20" y="30" width="200" height="8" rx="2" fill="#3A3632"/>
+                  <rect x="20" y="38" width="200" height="100" rx="3" fill="#322E2B" stroke="#3E3A36" stroke-width="1"/>
+                  <rect x="32" y="50" width="84" height="76" rx="2" fill="#3A3632"/>
+                  <circle cx="74" cy="88" r="4" fill="#5A5450"/>
+                  <rect x="128" y="50" width="80" height="76" rx="2" fill="#3A3632"/>
+                  <circle cx="168" cy="88" r="4" fill="#5A5450"/>
+                  <rect x="55" y="138" width="130" height="4" rx="1" fill="#4A4440"/>
+                  <text x="120" y="165" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#6B6560" font-style="italic">Serie Nero</text>
+                </svg>
+              </div>
+              <span class="product-tag">Nieuw 2025</span>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Nero — Mat zwart</h3>
+              <p class="product-desc">Donker en dramatisch. Zwart gelakt MDF met geïntegreerde grepen en een werkblad in geoxideerd staal.</p>
+              <div class="product-footer">
+                <div class="product-price">
+                  v.a. €18.500 <span>ex. btw</span>
+                </div>
+                <button class="product-btn" aria-label="Meer info over Nero">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="product-card fade-in">
+            <div class="product-img">
+              <div class="product-img-inner" aria-hidden="true">
+                <svg width="240" height="180" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="240" height="180" fill="#F0EDE8"/>
+                  <rect x="20" y="30" width="200" height="8" rx="2" fill="#D4CFC7"/>
+                  <rect x="20" y="38" width="200" height="100" rx="3" fill="#E8E3DC" stroke="#D4CFC7" stroke-width="1"/>
+                  <!-- Shaker style doors -->
+                  <rect x="30" y="46" width="88" height="84" rx="2" fill="#DDD8CF"/>
+                  <rect x="38" y="54" width="72" height="68" rx="1" fill="none" stroke="#C8C2B8" stroke-width="2"/>
+                  <circle cx="74" cy="88" r="3.5" fill="#B07D54"/>
+                  <rect x="126" y="46" width="86" height="84" rx="2" fill="#DDD8CF"/>
+                  <rect x="134" y="54" width="70" height="68" rx="1" fill="none" stroke="#C8C2B8" stroke-width="2"/>
+                  <circle cx="169" cy="88" r="3.5" fill="#B07D54"/>
+                  <rect x="55" y="138" width="130" height="4" rx="1" fill="#C8C2B8"/>
+                  <text x="120" y="165" text-anchor="middle" font-family="Georgia,serif" font-size="11" fill="#9E9890" font-style="italic">Serie Shaker</text>
+                </svg>
+              </div>
+              <span class="product-tag">Klassiek</span>
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">Shaker — Krijtlak</h3>
+              <p class="product-desc">Tijdloze shaker-stijl in handgeschilderd krijtlak. Koper handgrepen en een blad in Belgisch hardsteen.</p>
+              <div class="product-footer">
+                <div class="product-price">
+                  v.a. €16.200 <span>ex. btw</span>
+                </div>
+                <button class="product-btn" aria-label="Meer info over Shaker">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Testimonials ───────────────────────────────────── -->
+    <section class="testimonials" aria-labelledby="testimonials-heading">
+      <div class="container">
+        <div class="section-label">Ervaringen</div>
+        <h2 class="section-title" id="testimonials-heading">
+          Wat onze klanten<br><em>zeggen</em>
+        </h2>
+
+        <div class="testimonials-grid">
+          <article class="testimonial-card fade-in">
+            <div class="stars" aria-label="5 van 5 sterren">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+            </div>
+            <blockquote class="testimonial-text">
+              "Van het eerste gesprek tot de installatie was alles perfect. De keuken is precies wat wij voor ogen hadden — en meer."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">M</div>
+              <div>
+                <div class="author-name">Marloes & Joep van den Berg</div>
+                <div class="author-loc">Amsterdam, 2024</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial-card fade-in">
+            <div class="stars" aria-label="5 van 5 sterren">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+            </div>
+            <blockquote class="testimonial-text">
+              "Laverno heeft onze keuken getransformeerd. De kwaliteit van de materialen en de afwerking is op een ander niveau dan wat wij eerder gezien hadden."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">S</div>
+              <div>
+                <div class="author-name">Sandra Kooistra</div>
+                <div class="author-loc">Utrecht, 2024</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial-card fade-in">
+            <div class="stars" aria-label="5 van 5 sterren">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 10.7l-3.8 2.1.7-4.3-3.1-3 4.3-.6L8 1z"/></svg>
+            </div>
+            <blockquote class="testimonial-text">
+              "Wij hebben bewust gekozen voor een Nederlandse keukenmaker. Laverno heeft dat vertrouwen volledig waargemaakt."
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="author-avatar" aria-hidden="true">P</div>
+              <div>
+                <div class="author-name">Peter & Lisa Vermeer</div>
+                <div class="author-loc">Rotterdam, 2023</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA Banner ──────────────────────────────────────── -->
+    <section class="cta-banner" id="afspraak" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta-banner-inner">
+          <div>
+            <div class="section-label">Gratis intakegesprek</div>
+            <h2 class="section-title" id="cta-heading">
+              Klaar om uw<br><em>droomkeuken</em> te bouwen?
+            </h2>
+            <p class="section-sub" style="margin-top:16px;">
+              Laat uw e-mailadres achter en wij nemen binnen één werkdag contact op voor een vrijblijvend gesprek in onze showroom of bij u thuis.
+            </p>
+          </div>
+          <form class="cta-form" aria-label="Afspraak aanvragen" onsubmit="handleSubmit(event)">
+            <label for="email" class="sr-only">Uw e-mailadres</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="cta-input"
+              placeholder="uw@emailadres.nl"
+              required
+              autocomplete="email"
+              aria-required="true"
+            >
+            <button type="submit" class="btn-primary" style="white-space:nowrap;">
+              Neem contact op
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer class="footer" aria-labelledby="footer-brand">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="nav-logo" id="footer-brand">Laverno</span>
+          <p>Ambachtelijke keukens, handgemaakt in Nederland. Wij bouwen keukens die passen bij uw leven — nu en over twintig jaar.</p>
+          <div class="footer-socials" aria-label="Volg ons op social media">
+            <a href="#" class="social-btn" aria-label="Instagram">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>
+              </svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="Pinterest">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2C6.5 2 2 6.5 2 12c0 4.2 2.5 7.8 6.1 9.5-.1-.8-.2-2 0-2.9.2-.8 1.4-5.8 1.4-5.8s-.4-.7-.4-1.8c0-1.7.9-3 2.4-3 1.1 0 1.7.9 1.7 1.9 0 1.2-.7 2.9-1.1 4.5-.3 1.3.6 2.4 1.9 2.4 2.3 0 3.9-3 3.9-6.4 0-2.7-1.8-4.6-4.5-4.6-3.2 0-5 2.4-5 4.8 0 .9.3 1.9.8 2.5.1.1.1.2.1.3-.1.3-.3 1.1-.3 1.3 0 .2-.1.3-.4.1-1.5-.7-2.4-2.9-2.4-4.6 0-3.7 2.7-7.2 7.9-7.2 4.2 0 7.4 3 7.4 6.9 0 4.1-2.6 7.5-6.2 7.5-1.2 0-2.4-.6-2.8-1.4 0 0-.6 2.3-.8 2.9-.3 1-.9 2.1-1.4 2.9.9.3 1.9.4 2.9.4 5.5 0 10-4.5 10-10S17.5 2 12 2z"/>
+              </svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="Houzz">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <nav aria-label="Keukens">
+          <h4>Keukens</h4>
+          <ul>
+            <li><a href="#collectie">Moderne keukens</a></li>
+            <li><a href="#collectie">Klassieke keukens</a></li>
+            <li><a href="#collectie">Landelijke keukens</a></li>
+            <li><a href="#maatwerk">Maatwerk</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Informatie">
+          <h4>Informatie</h4>
+          <ul>
+            <li><a href="#verhaal">Ons verhaal</a></li>
+            <li><a href="#showroom">Showroom</a></li>
+            <li><a href="#">Duurzaamheid</a></li>
+            <li><a href="#">Garantie</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Contact">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:+31235001234">+31 (0)23 500 12 34</a></li>
+            <li><a href="mailto:info@laverno.nl">info@laverno.nl</a></li>
+            <li><a href="#showroom">Floris Versterstraat 14<br>2023 RK Haarlem</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Laverno B.V. — Alle rechten voorbehouden</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacybeleid</a>
+          <a href="#">Algemene voorwaarden</a>
+          <a href="#">Cookiebeleid</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Intersection observer for fade-in
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    } else {
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    // Form submit
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Verzonden ✓';
+      btn.style.background = 'var(--accent)';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+        btn.disabled = false;
+        e.target.reset();
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
