@@ -77,7 +77,9 @@ ul { list-style: none; }
 }
 .hero-bg {
   position: absolute; inset: 0;
-  background: url('https://d8j0ntlcm91z4.cloudfront.net/user_3Dl19afffFGJGyzL8mg4veBXNEC/hf_20260604_111914_bdefa6ed-f4d8-45ed-aae9-e3dd9cf92751.png') center/cover no-repeat;
+  background: 
+    url('https://d8j0ntlcm91z4.cloudfront.net/user_3Dl19afffFGJGyzL8mg4veBXNEC/hf_20260604_111914_bdefa6ed-f4d8-45ed-aae9-e3dd9cf92751.png') center/cover no-repeat,
+    linear-gradient(135deg, #1a110a 0%, #2d1f14 30%, #3d2b1a 60%, #241710 100%);
 }
 .hero-overlay {
   position: absolute; inset: 0;
@@ -312,7 +314,9 @@ section { padding: clamp(64px, 10vh, 112px) 0; }
 .dark-feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .dark-feature-img {
   aspect-ratio: 4/5; border-radius: var(--r-lg); overflow: hidden;
-  background: url('https://d8j0ntlcm91z4.cloudfront.net/user_3Dl19afffFGJGyzL8mg4veBXNEC/hf_20260604_111919_f79f7f43-29a7-49d1-83d0-33703ff62a07.png') center/cover no-repeat;
+  background: 
+    url('https://d8j0ntlcm91z4.cloudfront.net/user_3Dl19afffFGJGyzL8mg4veBXNEC/hf_20260604_111919_f79f7f43-29a7-49d1-83d0-33703ff62a07.png') center/cover no-repeat,
+    linear-gradient(135deg, #1a110a 0%, #2d1f14 30%, #3d2b1a 60%, #241710 100%);
 }
 .dark-feature-content { color: #fff; }
 .dark-feature-content .label { color: var(--copper); }
@@ -358,11 +362,11 @@ section { padding: clamp(64px, 10vh, 112px) 0; }
 
 /* ── Fade in ── */
 @media (prefers-reduced-motion: no-preference) {
-  .fi { opacity: 0; transform: translateY(24px); transition: opacity 420ms ease-out, transform 420ms ease-out; }
-  .fi.v { opacity: 1; transform: none; }
-  .fi:nth-child(2) { transition-delay: 80ms; }
-  .fi:nth-child(3) { transition-delay: 160ms; }
-  .fi:nth-child(4) { transition-delay: 240ms; }
+  .fi.will-animate { opacity: 0; transform: translateY(20px); transition: opacity 500ms ease-out, transform 500ms ease-out; }
+  .fi.will-animate.v { opacity: 1; transform: none; }
+  .fi.will-animate:nth-child(2) { transition-delay: 80ms; }
+  .fi.will-animate:nth-child(3) { transition-delay: 160ms; }
+  .fi.will-animate:nth-child(4) { transition-delay: 240ms; }
 }
 
 /* ── Mobile menu drawer ── */
@@ -917,8 +921,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(f
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('v'); obs.unobserve(e.target); } });
-  }, {threshold: 0.12});
-  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+  }, {threshold: 0, rootMargin: '0px 0px -30px 0px'});
+  document.querySelectorAll('.fi').forEach(el => {
+    el.classList.add('will-animate');
+    obs.observe(el);
+  });
+  // Hard fallback: show everything after 400ms regardless
+  setTimeout(() => document.querySelectorAll('.fi').forEach(el => el.classList.add('v')), 400);
 } else {
   document.querySelectorAll('.fi').forEach(el => el.classList.add('v'));
 }
