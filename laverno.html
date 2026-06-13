@@ -365,24 +365,113 @@ section { padding: clamp(64px, 10vh, 112px) 0; }
   .fi:nth-child(4) { transition-delay: 240ms; }
 }
 
+/* ── Mobile menu drawer ── */
+.mobile-menu {
+  display: none;
+  position: fixed; inset: 0; z-index: 190;
+  background: var(--dark);
+  flex-direction: column;
+  padding: 96px 32px 48px;
+  overflow-y: auto;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu-links { display: flex; flex-direction: column; gap: 4px; margin-bottom: 40px; }
+.mobile-menu-links a {
+  font-family: var(--serif); font-size: 36px; font-weight: 300; color: rgba(255,255,255,.8);
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06);
+  transition: color var(--t);
+}
+.mobile-menu-links a:hover { color: #fff; }
+.mobile-menu-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 16px 32px; font-size: 14px; font-weight: 500; letter-spacing: .05em;
+  background: var(--copper); color: #fff; border-radius: var(--r-sm);
+  margin-bottom: 40px;
+}
+.mobile-menu-bottom { font-size: 13px; color: rgba(255,255,255,.35); line-height: 1.8; }
+.mobile-menu-bottom a { color: rgba(255,255,255,.5); }
+.nav-mobile.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-mobile.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-mobile.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .product-hero-grid, .dark-feature-grid, .cta-grid { grid-template-columns: 1fr; gap: 48px; }
   .features-grid { grid-template-columns: 1fr 1fr; }
   .collections-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .lifestyle { grid-template-columns: 1fr; }
-  .lifestyle-img { min-height: 400px; }
+  .lifestyle-img { min-height: 400px; order: -1; }
+  .lifestyle-content { padding: clamp(40px,6vw,64px); }
+  .product-hero-img { order: -1; }
+  .dark-feature-img { min-height: 380px; border-radius: var(--r-md); }
 }
+
 @media (max-width: 768px) {
+  /* Nav */
   .nav-links, .nav-cta { display: none; }
   .nav-mobile { display: flex; }
-  .hero h1 { font-size: clamp(40px, 12vw, 72px); }
+  .nav-inner { padding: 0 20px; }
+
+  /* Hero */
+  .hero h1 { font-size: clamp(38px, 11vw, 64px); }
+  .hero-sub { font-size: 15px; max-width: 100%; }
   .hero-stats { display: none; }
+  .hero-scroll { display: none; }
+  .hero-content { padding-bottom: 56px; }
+  .hero-actions { gap: 12px; }
+  .btn-hero, .btn-hero-ghost { padding: 13px 22px; font-size: 13px; width: 100%; justify-content: center; }
+
+  /* Strip */
+  .strip-item { padding: 0 20px; font-size: 11px; }
+
+  /* Section spacing */
+  section { padding: 56px 0; }
+
+  /* Product hero */
+  .product-hero { padding: 56px 0; }
+  .product-hero-grid { gap: 36px; }
+  .product-hero-img img { max-height: 340px; }
+  .specs-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Collections */
   .collections-grid { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .cta-grid { grid-template-columns: 1fr; }
+  .collections-header { margin-bottom: 36px; }
+  .product-card-img { padding: 24px; }
+  .product-card-img img { max-height: 180px; }
+
+  /* Lifestyle */
+  .lifestyle-img { min-height: 300px; }
+  .lifestyle-content { padding: 40px 24px; }
+  .lifestyle-quote { font-size: 17px; }
+
+  /* Features */
+  .features-grid { grid-template-columns: 1fr; gap: 2px; }
+  .feature { padding: 28px 24px; }
+
+  /* Dark feature */
+  .dark-feature-grid { gap: 36px; }
+  .dark-feature-img { min-height: 280px; }
+
+  /* CTA */
+  .cta-grid { grid-template-columns: 1fr; gap: 36px; }
+  .cta-form { flex-direction: column; }
+  .cta-input { min-width: 0; width: 100%; }
+  .btn-primary { justify-content: center; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .footer-bottom-links { flex-wrap: wrap; gap: 14px; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: clamp(34px, 10vw, 52px); }
+  .collections-grid { grid-template-columns: 1fr; }
+  .specs-grid { grid-template-columns: 1fr; }
+  .product-card-body { padding: 18px; }
+  .container { padding: 0 16px; }
+  .nav-inner { padding: 0 16px; }
 }
 </style>
 </head>
@@ -400,11 +489,25 @@ section { padding: clamp(64px, 10vh, 112px) 0; }
       <li><a href="#showroom">Showroom</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Offerte aanvragen</a>
-    <button class="nav-mobile" aria-label="Menu">
+    <button class="nav-mobile" id="nav-mobile-btn" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigatie" aria-modal="true">
+  <nav class="mobile-menu-links" aria-label="Mobiele navigatie">
+    <a href="#collectie" class="mobile-nav-link">Collection</a>
+    <a href="#over" class="mobile-nav-link">About</a>
+    <a href="#showroom" class="mobile-nav-link">Showroom</a>
+  </nav>
+  <a href="#contact" class="mobile-menu-cta mobile-nav-link">Offerte aanvragen</a>
+  <div class="mobile-menu-bottom">
+    <p>info@laverno.nl</p>
+    <p>+31 (0)20 000 12 34</p>
+  </div>
+</div>
 
 <main id="main">
 
@@ -794,6 +897,21 @@ window.addEventListener('scroll', () => {
   if (s) nav.classList.remove('dark-mode');
   else nav.classList.add('dark-mode');
 }, {passive: true});
+
+// Mobile menu
+const mobileBtn = document.getElementById('nav-mobile-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+function toggleMenu(open) {
+  mobileMenu.classList.toggle('open', open);
+  mobileBtn.classList.toggle('is-open', open);
+  mobileBtn.setAttribute('aria-expanded', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+mobileBtn.addEventListener('click', () => toggleMenu(!mobileMenu.classList.contains('open')));
+document.querySelectorAll('.mobile-nav-link').forEach(a => {
+  a.addEventListener('click', () => toggleMenu(false));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(false); });
 
 // Fade-in
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
